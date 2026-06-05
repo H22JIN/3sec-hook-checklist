@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3초 후킹 프롬프트 생성기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #18181f;
+    --surface2: #22222d;
+    --surface3: #2a2a38;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f5;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+    --accent: #6c63ff;
+    --accent-dim: rgba(108,99,255,0.15);
+    --accent-border: rgba(108,99,255,0.35);
+    --green: #22c97a;
+    --green-dim: rgba(34,201,122,0.12);
+    --red: #ff5a5a;
+    --red-dim: rgba(255,90,90,0.12);
+    --amber: #f5a623;
+    --amber-dim: rgba(245,166,35,0.12);
+    --teal: #2dd4bf;
+    --teal-dim: rgba(45,212,191,0.12);
+    --pink: #f06292;
+    --pink-dim: rgba(240,98,146,0.12);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* Header */
+  .app-header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 18px 32px; position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    backdrop-filter: blur(12px);
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .header-logo { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .header-title { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; white-space: nowrap; }
+  .header-subtitle { font-size: 12px; color: var(--text3); margin-top: 1px; }
+  .header-stats { display: flex; align-items: center; gap: 10px; }
+  .stat-pill { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; padding: 5px 14px; border-radius: 99px; background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,201,122,0.2); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'Noto Sans KR', sans-serif; font-size: 13px; font-weight: 500;
+    padding: 7px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border2);
+    background: var(--surface2); color: var(--text2); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface3); color: var(--text); }
+  .btn-primary { background: var(--accent); color: #fff; border-color: transparent; }
+  .btn-primary:hover { background: #7b74ff; color: #fff; }
+  .btn-danger { background: var(--red-dim); color: var(--red); border-color: rgba(255,90,90,0.2); }
+  .btn-danger:hover { background: rgba(255,90,90,0.22); }
+  .btn-ghost { background: transparent; border-color: transparent; padding: 6px 8px; }
+  .btn-ghost:hover { background: var(--surface3); border-color: transparent; }
+  .btn-sm { font-size: 12px; padding: 5px 10px; }
+  .btn-icon { padding: 6px; width: 30px; height: 30px; justify-content: center; }
+
+  /* Layout */
+  .layout { display: none; grid-template-columns: 1fr 400px; gap: 24px; max-width: 1320px; margin: 0 auto; padding: 24px 24px 80px; align-items: start; }
+  .layout.active { display: grid; }
+  .layout.ai-mode { grid-template-columns: 1fr; max-width: 760px; }
+  .layout.ai-mode .left-panel { display: none; }
+  .layout.ai-mode .sidebar { position: static; top: auto; }
+  @media (max-width: 900px) { .layout.active { grid-template-columns: 1fr; gap: 16px; } .sidebar { order: 0; position: static; top: auto; } }
+
+  /* App / Mode select screens */
+  #mode-select, #app-select { display: none; max-width: 880px; margin: 0 auto; padding: 56px 24px 80px; }
+  #mode-select.open, #app-select.open { display: block; }
+  .ms-back { background: none; border: none; color: var(--text2); font-size: 13px; cursor: pointer; margin-bottom: 18px; padding: 4px 0; font-family: inherit; }
+  .ms-back:hover { color: var(--text); }
+  .ms-title { font-size: 26px; font-weight: 700; text-align: center; letter-spacing: -0.5px; color: var(--text); }
+  .ms-sub { font-size: 15px; color: var(--text2); text-align: center; margin-top: 10px; margin-bottom: 36px; }
+  .ms-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .mode-card { text-align: left; background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; padding: 28px 26px; cursor: pointer; transition: all 0.15s; font-family: 'Noto Sans KR', sans-serif; color: var(--text); }
+  .mode-card:hover { border-color: var(--accent-border); background: var(--surface2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .mode-card-icon { font-size: 38px; margin-bottom: 16px; }
+  .mode-card-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .mode-card-desc { font-size: 13.5px; color: var(--text2); line-height: 1.6; }
+  @media (max-width: 720px) { .ms-cards { grid-template-columns: 1fr; } }
+
+  /* AI mode note + checked field toggle */
+  .ai-note { display: none; font-size: 12.5px; color: var(--text); background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; padding: 11px 13px; margin-top: 16px; line-height: 1.6; }
+  .layout.ai-mode .ai-note { display: block; }
+  .layout.ai-mode #checked-field { display: none; }
+  .layout.ai-mode #script-checked-field { display: none; }
+
+  /* 대본: 구조 골격 가이드 + 캐리오버 안내 */
+  .structure-guide { display: none; margin-top: 10px; font-size: 13px; line-height: 1.6; color: var(--text); background: var(--surface); border: 1px solid var(--border2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 12px 14px; }
+  .structure-guide.show { display: block; }
+  .structure-guide b { color: var(--accent); }
+  .carry-note { font-size: 12.5px; color: var(--text); background: rgba(80,200,120,0.12); border: 1px solid rgba(80,200,120,0.4); border-radius: 8px; padding: 11px 13px; margin-bottom: 14px; line-height: 1.55; }
+
+  /* Left panel */
+  .left-panel { min-width: 0; }
+
+  /* AI panel (sidebar) */
+  .sidebar { position: sticky; top: 80px; }
+
+  /* AI Input card */
+  .ai-input-card {
+    background: var(--surface);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .ai-input-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--accent-dim);
+  }
+  .ai-badge {
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+    background: var(--accent); color: #fff; letter-spacing: 0.06em;
+  }
+  .ai-input-title { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
+  .ai-input-header { cursor: pointer; }
+  .ai-chevron { font-size: 11px; color: var(--text3); transition: transform 0.2s; }
+  .ai-chevron.open { transform: rotate(180deg); }
+  .ai-input-card.collapsed .ai-input-body { display: none; }
+
+  .ai-input-body { padding: 16px 18px; }
+
+  .field-label { font-size: 12px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .field-hint { font-size: 11px; color: var(--text3); margin-left: 6px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+  /* Selectable pills (template / goal / emotion / trust) */
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    font-size: 12.5px; font-weight: 500; padding: 6px 12px; border-radius: 99px;
+    border: 1px solid var(--border2); background: var(--surface2); color: var(--text2);
+    cursor: pointer; transition: all 0.12s; user-select: none; white-space: nowrap;
+  }
+  .pill:hover { color: var(--text); border-color: var(--text3); }
+  .pill.selected { background: var(--accent); color: #fff; border-color: transparent; font-weight: 600; }
+
+  textarea {
+    font-family: 'Noto Sans KR', sans-serif; font-size: 13.5px;
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); color: var(--text);
+    padding: 12px 14px; outline: none; transition: border-color 0.15s;
+    width: 100%; resize: none; line-height: 1.6;
+  }
+  textarea:focus { border-color: var(--accent-border); }
+  textarea::placeholder { color: var(--text3); }
+
+  .generate-btn {
+    width: 100%; margin-top: 12px; padding: 14px;
+    background: var(--accent); color: #fff; border: none;
+    border-radius: var(--radius-sm); font-size: 15px; font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+  }
+  .generate-btn:hover { background: #7b74ff; transform: translateY(-1px); }
+  .generate-btn:active { transform: translateY(0); }
+
+  .img-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; user-select: none; }
+  .img-toggle input { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+
+  .checked-tags {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; min-height: 28px;
+  }
+  .checked-tag {
+    font-size: 12px; padding: 4px 10px; border-radius: 99px; font-weight: 600;
+    background: var(--surface3); color: var(--text); border: 1px solid var(--border2);
+    max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .empty-tags { font-size: 13px; color: var(--text3); padding: 4px 0; font-weight: 400; }
+
+  /* AI Result card */
+  .ai-result-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .ai-result-header {
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.2);
+  }
+  .result-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .result-title { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; }
+
+  .ai-result-body { padding: 18px; }
+
+  /* Empty state */
+  .result-empty { padding: 40px 18px; text-align: center; color: var(--text3); font-size: 14px; line-height: 1.7; }
+  .result-empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
+
+  /* Inputs */
+  input[type=text], select {
+    font-family: 'Noto Sans KR', sans-serif; font-size: 14px;
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); color: var(--text);
+    padding: 8px 12px; outline: none; transition: border-color 0.15s; width: 100%;
+  }
+  input[type=text]:focus { border-color: var(--accent-border); }
+  input::placeholder { color: var(--text3); }
+
+  /* Add cat bar */
+  .add-cat-bar {
+    margin-bottom: 16px; background: var(--surface);
+    border: 1px dashed var(--border2); border-radius: var(--radius);
+    padding: 16px; display: flex; gap: 12px; align-items: center;
+  }
+
+  /* Cat card */
+  .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+  .cat-card:hover { border-color: var(--border2); }
+  .cat-header { display: flex; align-items: center; gap: 10px; padding: 13px 14px; cursor: pointer; user-select: none; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .cat-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+  .cat-name { flex: 1; min-width: 0; font-size: 14.5px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .progress-text { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--text2); flex-shrink: 0; }
+  .cat-actions { display: flex; gap: 2px; }
+  .chevron { font-size: 11px; color: var(--text3); transition: transform 0.2s; flex-shrink: 0; }
+  .chevron.open { transform: rotate(180deg); }
+  .cat-body { display: none; }
+  .cat-body.open { display: block; }
+
+  /* Sub */
+  .sub-section { border-top: 1px solid var(--border); background: var(--surface); }
+  .sub-header { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: var(--surface2); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+  .sub-chevron { font-size: 10px; }
+  .sub-name { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 0.03em; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub-count { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--text3); flex-shrink: 0; }
+  .sub-actions { display: flex; gap: 2px; flex-shrink: 0; }
+
+  /* ⋯ dropdown menu */
+  .ctx-menu { position: absolute; display: none; z-index: 250; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 4px; min-width: 120px; box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
+  .ctx-item { display: block; width: 100%; text-align: left; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; padding: 8px 12px; border: none; background: transparent; color: var(--text); border-radius: 6px; cursor: pointer; }
+  .ctx-item:hover { background: var(--surface3); }
+  .ctx-item.danger { color: var(--red); }
+
+  /* Item */
+  .item-row { display: flex; align-items: center; gap: 12px; padding: 12px 20px 12px 52px; border-bottom: 1px solid rgba(255,255,255,0.03); transition: all 0.15s; cursor: pointer; }
+  .item-row:last-child { border-bottom: none; }
+  .item-row:hover { background: rgba(255,255,255,0.02); }
+  .item-row.checked { background: var(--green-dim); border-left: 3px solid var(--green); padding-left: 49px; }
+  .checkbox { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; background: var(--surface3); }
+  .checked .checkbox { background: var(--green); border-color: var(--green); }
+  .checkbox svg { display: none; }
+  .checked .checkbox svg { display: block; }
+  .item-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .item-text { font-size: 14.5px; color: #a0a0b8; line-height: 1.4; transition: color 0.15s; font-weight: 400; }
+  .checked .item-text { color: #ffffff; font-weight: 500; }
+  .item-ex { font-size: 12px; color: var(--text3); line-height: 1.3; }
+  .item-ex::before { content: '예) '; opacity: 0.7; }
+  .item-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.1s; }
+  .item-row:hover .item-actions { opacity: 1; }
+
+  /* Add bars */
+  .add-sub-bar { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.1); }
+  .add-item-bar { padding: 10px 20px 10px 52px; border-top: 1px dashed var(--border2); display: flex; gap: 10px; align-items: center; }
+
+  /* Modals */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: center; justify-content: center; }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 14px; padding: 26px; width: 420px; max-width: calc(100vw - 32px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--text); }
+  .modal-field { margin-bottom: 16px; }
+  .modal-label { font-size: 12px; color: var(--text3); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+  .emoji-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-top: 8px; }
+  .emoji-btn { width: 36px; height: 36px; background: var(--surface2); border: 1px solid transparent; border-radius: 8px; font-size: 18px; cursor: pointer; transition: all 0.1s; display: flex; align-items: center; justify-content: center; }
+  .emoji-btn:hover { background: var(--surface3); border-color: var(--border2); transform: scale(1.05); }
+  .emoji-btn.selected { border-color: var(--accent); background: var(--accent-dim); }
+  .tag-options { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .tag-option { padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; border: 1px solid transparent; cursor: pointer; transition: all 0.1s; }
+  .tag-option[data-tag="none"] { background: var(--surface2); color: var(--text2); border-color: var(--border2); }
+  .tag-option[data-tag="lose"] { background: var(--red-dim); color: var(--red); }
+  .tag-option[data-tag="gain"] { background: var(--green-dim); color: var(--green); }
+  .tag-option[data-tag="emo"] { background: var(--pink-dim); color: var(--pink); }
+  .tag-option[data-tag="att"] { background: var(--amber-dim); color: var(--amber); }
+  .tag-option[data-tag="proof"] { background: var(--teal-dim); color: var(--teal); }
+  .tag-option.selected { outline: 2px solid currentColor; outline-offset: 2px; }
+  
+  .confirm-dialog { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 300; display: none; align-items: center; justify-content: center; }
+  .confirm-dialog.open { display: flex; }
+  .confirm-box { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 24px; width: 320px; max-width: calc(100vw - 32px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .confirm-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+  .confirm-desc { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.5; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+
+  @media (max-width: 600px) { .app-header { padding: 14px 16px; } .layout { padding: 16px 16px 60px; } .header-subtitle { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-left">
+    <div class="header-logo">⚡</div>
+    <div>
+      <div class="header-title">3초 후킹 체크리스트</div>
+      <div class="header-subtitle">MECE 분류 · AI 프롬프트 자동 생성</div>
+    </div>
+  </div>
+  <div class="header-stats">
+    <span class="stat-pill" id="global-stat">0 / 0</span>
+    <button class="btn btn-sm" id="reset-btn" onclick="resetAll()">초기화</button>
+    <button class="btn btn-sm" id="mode-change-btn" onclick="changeMode()" style="display:none">↔ 모드 변경</button>
+    <button class="btn btn-sm" id="home-btn" onclick="showAppSelect()" style="display:none">🏠 처음으로</button>
+  </div>
+</header>
+
+<!-- 1단계: 무엇을 만들지 선택 -->
+<div id="app-select">
+  <div class="ms-inner">
+    <h1 class="ms-title">무엇을 만들까요?</h1>
+    <p class="ms-sub">단계별 체크리스트로 숏폼을 설계하세요.</p>
+    <div class="ms-cards">
+      <button class="mode-card" onclick="selectApp('hook')">
+        <div class="mode-card-icon">⚡</div>
+        <div class="mode-card-title">3초 후킹 체크리스트</div>
+        <div class="mode-card-desc">영상 초반 3초, 시청자를 멈추게 만드는 후킹 전략을 설계합니다.</div>
+      </button>
+      <button class="mode-card" onclick="selectApp('script')">
+        <div class="mode-card-icon">📝</div>
+        <div class="mode-card-title">숏폼 대본 체크리스트</div>
+        <div class="mode-card-desc">구조·리텐션·자막·편집까지, 완주율 높은 숏폼 대본을 설계합니다.</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 2단계: 모드 선택 화면 (앱에 따라 문구 동적 변경) -->
+<div id="mode-select">
+  <div class="ms-inner">
+    <button class="ms-back" onclick="showAppSelect()">← 처음 화면으로</button>
+    <h1 class="ms-title" id="ms-title">어떻게 시작할까요?</h1>
+    <p class="ms-sub" id="ms-sub">방식을 선택하세요.</p>
+    <div class="ms-cards">
+      <button class="mode-card" onclick="selectMode('manual')">
+        <div class="mode-card-icon" id="mc-manual-icon">🖐️</div>
+        <div class="mode-card-title" id="mc-manual-title"></div>
+        <div class="mode-card-desc" id="mc-manual-desc"></div>
+      </button>
+      <button class="mode-card" onclick="selectMode('ai')">
+        <div class="mode-card-icon" id="mc-ai-icon">🤖</div>
+        <div class="mode-card-title" id="mc-ai-title"></div>
+        <div class="mode-card-desc" id="mc-ai-desc"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="hook-layout">
+  <!-- LEFT: Checklist -->
+  <div class="left-panel">
+    <div id="cat-list"></div>
+  </div>
+
+  <!-- RIGHT: AI Sidebar -->
+  <div class="sidebar">
+    <!-- Input card -->
+    <div class="ai-input-card">
+      <div class="ai-input-header" onclick="toggleAiCard()">
+        <span class="ai-badge">AI</span>
+        <span class="ai-input-title">후킹 프롬프트 생성기</span>
+        <span class="ai-chevron open" id="ai-chevron">▼</span>
+      </div>
+      <div class="ai-input-body">
+        <!-- 영상 템플릿 -->
+        <div class="field-label">영상 템플릿 <span class="field-hint">(성격 1개)</span></div>
+        <div class="pill-group" id="tpl-group" data-single="1">
+          <span class="pill" onclick="togglePill(this)">강의·정보 홍보형</span>
+          <span class="pill" onclick="togglePill(this)">제품 리뷰형</span>
+          <span class="pill" onclick="togglePill(this)">일상 썰풀이형</span>
+          <span class="pill" onclick="togglePill(this)">꿀팁·정보형</span>
+          <span class="pill" onclick="togglePill(this)">챌린지·밈형</span>
+          <span class="pill" onclick="togglePill(this)">브이로그형</span>
+        </div>
+
+        <!-- 주제 입력 -->
+        <div class="field-label" style="margin-top:16px;">영상 주제 / 첫 문장 아이디어</div>
+        <textarea id="topic-input" rows="2" placeholder="예) 직장인 부업으로 월 300만원 버는 방법&#10;예) 이 한 그릇이 내 인생을 바꿨다"></textarea>
+
+        <!-- 영상 목표 -->
+        <div class="field-label" style="margin-top:16px;">영상 목표 <span class="field-hint">(복수 선택)</span></div>
+        <div class="pill-group" id="goal-group">
+          <span class="pill" onclick="togglePill(this)">팔로우</span>
+          <span class="pill" onclick="togglePill(this)">좋아요</span>
+          <span class="pill" onclick="togglePill(this)">댓글</span>
+          <span class="pill" onclick="togglePill(this)">DM</span>
+          <span class="pill" onclick="togglePill(this)">링크 클릭</span>
+          <span class="pill" onclick="togglePill(this)">상품 판매</span>
+          <span class="pill" onclick="togglePill(this)">브랜딩</span>
+        </div>
+
+        <!-- 유발할 감정 -->
+        <div class="field-label" style="margin-top:16px;">유발할 감정 <span class="field-hint">(가장 중요! 복수 선택)</span></div>
+        <div class="pill-group" id="emotion-group">
+          <span class="pill" onclick="togglePill(this)">충격</span>
+          <span class="pill" onclick="togglePill(this)">공포</span>
+          <span class="pill" onclick="togglePill(this)">호기심</span>
+          <span class="pill" onclick="togglePill(this)">공감</span>
+          <span class="pill" onclick="togglePill(this)">기대감</span>
+          <span class="pill" onclick="togglePill(this)">욕망</span>
+          <span class="pill" onclick="togglePill(this)">분노</span>
+          <span class="pill" onclick="togglePill(this)">웃음</span>
+        </div>
+
+        <!-- 신뢰·증거 요소 -->
+        <div class="field-label" style="margin-top:16px;">신뢰·증거 요소 <span class="field-hint">(넣으면 퀄리티 급상승)</span></div>
+        <div class="pill-group" id="trust-group">
+          <span class="pill" onclick="togglePill(this)">직접 운영 계정</span>
+          <span class="pill" onclick="togglePill(this)">조회수 사례</span>
+          <span class="pill" onclick="togglePill(this)">고객 후기</span>
+          <span class="pill" onclick="togglePill(this)">실험 결과</span>
+          <span class="pill" onclick="togglePill(this)">없음</span>
+        </div>
+        <input type="text" id="trust-detail" style="margin-top:8px;" placeholder="예) 1000개 넘는 숏폼 분석함 / 조회수 100배 차이 / 이 방법으로 8kg 감량">
+
+        <!-- 레퍼런스 영상 분석 -->
+        <div class="field-label" style="margin-top:16px;">
+          레퍼런스 영상 분석 <span class="field-hint">(선택)</span>
+        </div>
+        <textarea id="reference-input" rows="3" placeholder="잘 터진 비슷한 영상의 특징이나 차별화할 포인트를 적어주세요.&#10;예) 레퍼런스는 '절대 먹지 마세요'로 시작함. 나는 역설 대신 댓글 리딩으로 다르게 시작해서 기시감을 없앨 것임."></textarea>
+
+        <!-- 체크된 요소 (직접 선택 모드) -->
+        <div id="checked-field">
+          <div class="field-label" style="margin-top:16px; display:flex; justify-content:space-between;">
+            <span>체크된 후킹 요소 <span class="field-hint">(선택)</span></span>
+            <span id="check-count-label" style="color:var(--text3);font-weight:500">(0개)</span>
+          </div>
+          <div class="checked-tags" id="checked-tags-preview">
+            <span class="empty-tags">좌측 체크리스트에서 요소를 선택하면 자동 반영돼요</span>
+          </div>
+        </div>
+
+        <!-- AI 제안 모드 안내 -->
+        <div class="ai-note">🤖 AI 제안 모드예요. 30개 후킹 요소 중 이 영상에 맞는 걸 AI가 추천해주니, 직접 체크할 필요는 없어요. 생성된 프롬프트를 붙여넣으면 AI가 먼저 후보를 제안하고, 고르면 최종 결과를 만들어줍니다.</div>
+
+        <label class="img-toggle"><input type="checkbox" id="img-mode"><span>🖼️ 이미지로 결과 받기 <span class="field-hint" style="margin-left:0;">(한 장짜리 스토리보드)</span></span></label>
+
+        <button class="generate-btn" id="gen-btn" onclick="generateHooks()">
+          <span id="gen-btn-text">⚡ 프롬프트 생성</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Result card -->
+    <div class="ai-result-card">
+      <div class="ai-result-header">
+        <div class="result-dot" id="result-dot" style="background:var(--text3)"></div>
+        <span class="result-title">생성 결과</span>
+      </div>
+      <div class="ai-result-body" id="result-body">
+        <div class="result-empty">
+          <div class="result-empty-icon">💡</div>
+          주제를 입력하고 후킹 요소를 체크한 뒤<br><b>생성 버튼</b>을 누르세요
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 숏폼 대본 레이아웃 ===== -->
+<div class="layout" id="script-layout">
+  <!-- LEFT: 대본 제작 체크리스트 -->
+  <div class="left-panel">
+    <div id="script-cat-list"></div>
+  </div>
+
+  <!-- RIGHT: 대본 생성기 -->
+  <div class="sidebar">
+    <div class="ai-input-card">
+      <div class="ai-input-header" onclick="toggleScriptCard()">
+        <span class="ai-badge">AI</span>
+        <span class="ai-input-title">숏폼 대본 생성기</span>
+        <span class="ai-chevron open" id="script-chevron">▼</span>
+      </div>
+      <div class="ai-input-body" id="script-input-body">
+        <!-- 후킹에서 넘어온 정보 안내 -->
+        <div class="carry-note" id="carry-note" style="display:none"></div>
+
+        <!-- 영상 목표 -->
+        <div class="field-label">영상 목표 <span class="field-hint">(복수 선택)</span></div>
+        <div class="pill-group" id="script-goal-group">
+          <span class="pill" onclick="togglePill(this)">팔로우</span>
+          <span class="pill" onclick="togglePill(this)">좋아요</span>
+          <span class="pill" onclick="togglePill(this)">댓글</span>
+          <span class="pill" onclick="togglePill(this)">DM</span>
+          <span class="pill" onclick="togglePill(this)">링크 클릭</span>
+          <span class="pill" onclick="togglePill(this)">상품 판매</span>
+          <span class="pill" onclick="togglePill(this)">브랜딩</span>
+        </div>
+
+        <!-- 영상 구조 -->
+        <div class="field-label" style="margin-top:16px;">영상 구조 <span class="field-hint">(1개 선택 — 대본 골격)</span></div>
+        <div class="pill-group" id="structure-group" data-single="1"></div>
+        <div class="structure-guide" id="structure-guide"></div>
+
+        <!-- 영상 주제 / 핵심 메시지 / 정보 -->
+        <div class="field-label" style="margin-top:16px;">영상 주제 / 핵심 메시지 / 영상 관련 정보 <span class="field-hint">(자유 입력)</span></div>
+        <textarea id="message-input" rows="3" placeholder="영상 주제, 전하고 싶은 핵심 메시지, 타깃 시청자, 참고할 정보 등을 자유롭게 적어주세요.&#10;예) 아침 10분 루틴 하나로 하루가 바뀐다 / 직장인 타깃 / 실제 내 경험담"></textarea>
+        <label class="img-toggle"><input type="checkbox" id="single-msg-check" checked><span>🎯 이 영상의 메시지를 하나로 단순하게 유지</span></label>
+
+        <!-- 3초 후킹 결과 입력 -->
+        <div class="field-label" style="margin-top:16px;">3초 후킹 / 첫 문장 / 3초 후킹 체크리스트 결과 입력 <span class="field-hint">(선택)</span></div>
+        <textarea id="script-hook-input" rows="3" placeholder="3초 후킹 체크리스트에서 만든 첫 문장이나 AI 결과를 그대로 붙여넣으세요."></textarea>
+
+        <!-- 레퍼런스 영상 분석 -->
+        <div class="field-label" style="margin-top:16px;">레퍼런스 영상 분석 <span class="field-hint">(선택)</span></div>
+        <textarea id="script-reference-input" rows="3" placeholder="잘 터진 비슷한 영상의 특징이나 차별화할 포인트를 적어주세요.&#10;예) 레퍼런스는 빠른 컷+자막 위주. 나는 스토리텔링으로 차별화."></textarea>
+
+        <!-- 직접 모드: 적용할 체크리스트 -->
+        <div id="script-checked-field">
+          <div class="field-label" style="margin-top:16px; display:flex; justify-content:space-between;">
+            <span>적용할 제작 체크리스트 <span class="field-hint">(선택)</span></span>
+            <span id="script-check-count" style="color:var(--text3);font-weight:500">(0개)</span>
+          </div>
+          <div class="checked-tags" id="script-checked-preview">
+            <span class="empty-tags">좌측에서 체크하면 '반드시 충족할 조건'으로 반영돼요</span>
+          </div>
+        </div>
+
+        <!-- AI 자동 생성 모드 안내 -->
+        <div class="ai-note">🤖 AI 자동 생성 모드예요. 루프·자막·편집·오디오 등 모든 제작 베스트프랙티스를 AI가 알아서 적용해 대본을 완성합니다. 구조를 안 고르면 가장 잘 맞는 구조도 추천해줘요.</div>
+
+        <button class="generate-btn" onclick="generateScript()">
+          <span id="script-gen-text">📝 대본 프롬프트 생성</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="ai-result-card">
+      <div class="ai-result-header">
+        <div class="result-dot" id="script-result-dot" style="background:var(--text3)"></div>
+        <span class="result-title">생성 결과</span>
+      </div>
+      <div class="ai-result-body" id="script-result-body">
+        <div class="result-empty">
+          <div class="result-empty-icon">🎬</div>
+          기획 정보를 입력하고<br><b>생성 버튼</b>을 누르세요
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal-backdrop" id="modal-cat">
+  <div class="modal">
+    <div class="modal-title">카테고리 편집</div>
+    <div class="modal-field">
+      <div class="modal-label">이름</div>
+      <input type="text" id="edit-cat-name" placeholder="카테고리 이름">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">아이콘</div>
+      <div class="emoji-grid" id="emoji-grid"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-cat')">취소</button>
+      <button class="btn btn-primary" onclick="saveCategory()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Item Modal -->
+<div class="modal-backdrop" id="modal-item">
+  <div class="modal">
+    <div class="modal-title">항목 편집</div>
+    <div class="modal-field">
+      <div class="modal-label">내용</div>
+      <input type="text" id="edit-item-text" placeholder="항목 내용">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">예시 문구 <span style="font-weight:400;text-transform:none;letter-spacing:0;">(선택)</span></div>
+      <input type="text" id="edit-item-ex" placeholder="옆에 표시될 짧은 예시">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-item')">취소</button>
+      <button class="btn btn-primary" onclick="saveItem()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Sub Modal -->
+<div class="modal-backdrop" id="modal-sub">
+  <div class="modal">
+    <div class="modal-title">소분류 편집</div>
+    <div class="modal-field">
+      <div class="modal-label">소분류 이름</div>
+      <input type="text" id="edit-sub-name" placeholder="소분류 이름">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-sub')">취소</button>
+      <button class="btn btn-primary" onclick="saveSub()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ⋯ Dropdown menu -->
+<div class="ctx-menu" id="ctx-menu"></div>
+
+<!-- Confirm Dialog -->
+<div class="confirm-dialog" id="confirm-dialog">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">삭제하시겠습니까?</div>
+    <div class="confirm-desc" id="confirm-desc"></div>
+    <div class="confirm-actions">
+      <button class="btn" onclick="closeConfirm()">취소</button>
+      <button class="btn btn-danger" id="confirm-ok">삭제</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const EMOJIS = ['💬','👁️','🔊','🎬','🧠','🔥','⚡','💡','🎯','📣','🍜','🥩','🍰','🎵','💰','🏆','📱','✨','🌟','💎','🚀','❤️','😮','🤯','👋','🎭','🔮','🌈'];
+
+// ── 구조 원칙 (MECE) ──────────────────────────────────────────
+// 대분류/소분류 = "어떻게 전달하는가" (전달 채널) → 서로 겹치지 않음
+//   💬 언어 · 🎬 영상 · 🙋 인물 · 🔊 사운드
+// 각 항목: t = 체크리스트 라벨 / ex = 옆에 보이는 짧은 예시 / p = AI 프롬프트로 전달되는 상세 설명
+let data = [
+  {id:'A',label:'💬 언어 — 멘트·자막',icon:'💬',open:true,subs:[
+    {id:'A1',name:'호기심·정보 갭',items:[
+      {id:'i1',t:"호기심·질문 유발",ex:"이게 가능하다고?",checked:false,p:"핵심을 감춰 궁금증을 만들거나 누구나 궁금해할 극단적 질문으로 시작 (예: '이게 가능하다고?', '아무도 안 알려준 것', '세상에서 제일 얇은 빼빼로?')"},
+      {id:'i30',t:"부조화 조합",ex:"건물주인 내가 막노동 하는 이유",checked:false,p:"서로 어울리지 않는 두 요소를 충돌시켜 호기심을 유발 (예: '예쁜 외모의 내가 3년간 솔로인 이유', '건물주인 내가 막노동 하는 이유')"},
+      {id:'i2',t:"역설·반전·논란",ex:"절대 따라하지 마세요",checked:false,p:"기대를 뒤집는 반대 화법이나 논란성 떡밥 (예: '절대 따라하지 마세요', '내가 절대 OO 안 하는 이유')"},
+      {id:'i3',t:"숫자·구체성",ex:"딱 3가지만 기억하세요",checked:false,p:"구체적인 숫자로 신뢰와 기대감 부여 (예: '3가지', '7초', '1만 명')"},
+    ]},
+    {id:'A2',name:'이득·손실 자극',items:[
+      {id:'i4',t:"이득·해결 제시",ex:"이걸로 월 300 법니다",checked:false,p:"얻을 이득이나 문제 해결을 약속 (예: '이걸로 월 OOO만원', '무료로 드립니다', '더 이상 걱정 마세요')"},
+      {id:'i5',t:"손실·결핍 자극",ex:"이거 모르면 손해예요",checked:false,p:"안 하면 잃는다는 불안과 결핍을 자극 (예: '이거 모르면 손해', '당신만 뒤처진다', '아직도 이거 없으세요?')"},
+    ]},
+    {id:'A3',name:'공감·관계 형성',items:[
+      {id:'i6',t:"공감·자기노출",ex:"저도 이거 몰라서 망했어요",checked:false,p:"솔직한 경험이나 약점을 드러내 동질감 형성 (예: '저도 이걸로 망했어요', '이거 저만 몰랐나요?')"},
+      {id:'i7',t:"댓글 리딩",ex:"댓글로 이거 물어보셨는데",checked:false,p:"댓글이나 사연을 읽어주며 시작 (예: '어떤 분이 댓글로 OOO를 물어보셨는데요')"},
+      {id:'i8',t:"타깃 호명·소속감",ex:"부업 찾는 직장인이라면",checked:false,p:"특정 시청자를 콕 집어 부르고 소속감 자극 (예: '부업 찾는 직장인이라면', '이걸 아는 사람만')"},
+      {id:'i9',t:"나의 호불호 표현",ex:"난 이거 진짜 별로였어요",checked:false,p:"개인적 취향과 호불호를 강하게 표현 (예: '난 이거 진짜 별로였는데…', '이건 미쳤다 진짜 좋아요')"},
+    ]},
+    {id:'A4',name:'신뢰·증거 제시',items:[
+      {id:'i10',t:"사회적 증거·권위",ex:"이미 10만 명이 봤어요",checked:false,p:"숫자·반응·전문가로 신뢰 부여 (예: '이미 10만 명이 봤어요', '보는 사람마다 어디서 샀냐고 묻네요', 전문가·유명인 인용)"},
+    ]},
+    {id:'A5',name:'긴박·행동 유도',items:[
+      {id:'i11',t:"긴박·희소성",ex:"오늘까지만 합니다",checked:false,p:"지금/한정으로 즉시 행동을 압박 (예: '지금 안 하면 기회 없음', '품절 임박', 한정 수량·기간, '오늘만')"},
+      {id:'i12',t:"명령형 CTA",ex:"지금 당장 해보세요",checked:false,p:"행동을 직접 지시 (예: '지금 당장 ○○ 가져오세요')"},
+    ]},
+    {id:'A7',name:'스토리텔링·썰 풀기',items:[
+      {id:'i13',t:"경험담·썰 오프닝",ex:"옛날에 이런 일이 있었는데",checked:false,p:"개인적 경험이나 황당한 썰로 몰입 유도 (예: '제가 옛날에 이런 적이 있었는데요', '진짜 황당한 경험 있어요')"},
+      {id:'i14',t:"결말 먼저 던지기",ex:"결국 이렇게 됐습니다",checked:false,p:"결과부터 보여주고 과정을 궁금하게 (예: '결국 이렇게 됐는데, 어쩌다 이랬냐면…')"},
+    ]},
+    {id:'A6',name:'자막·텍스트 연출',items:[
+      {id:'i15',t:"강조 자막·키워드 팝업",ex:"첫 문장 크게·색 강조",checked:false,p:"첫 문장을 크게·색으로 강조하고 핵심 단어가 튀어나오는 텍스트 애니메이션, 카운트다운 숫자 활용"},
+    ]},
+  ]},
+  {id:'B',label:'🎬 영상 — 카메라·편집·비주얼',icon:'🎬',open:false,subs:[
+    {id:'B1',name:'카메라·화각',items:[
+      {id:'i16',t:"줌인·앵글 변화",ex:"얼굴로 확 줌인",checked:false,p:"점점 확대하는 줌인, 위에서 내려다보는 하이앵글 등 신선한 구도로 집중도 상승"},
+      {id:'i17',t:"핸드헬드·POV",ex:"1인칭 시점으로 따라가기",checked:false,p:"흔들리는 핸드헬드로 현장감, 1인칭 POV 시점으로 몰입감"},
+    ]},
+    {id:'B2',name:'동적 연출·질감',items:[
+      {id:'i18',t:"역동적 무빙·등장",ex:"접시 돌리며 끌어오기",checked:false,p:"오브제를 돌리며 끌어오거나 재료를 들이붓는 등 과장된 무빙으로 역동적 등장"},
+      {id:'i19',t:"질감·온도 클로즈업",ex:"치즈 늘어나는 클로즈업",checked:false,p:"단면 컷, 치즈 늘어남·소스, 김·불꽃 등 식감과 온도를 자극하는 클로즈업"},
+    ]},
+    {id:'B3',name:'색·편집·구도',items:[
+      {id:'i20',t:"빠른 컷·강한 첫 프레임",ex:"2초에 5장면 전환",checked:false,p:"2초에 5장면 같은 속도감, 밝음 vs 어둠·채도 폭발 등 대비 강한 첫 화면"},
+      {id:'i21',t:"Before/After·증거 화면",ex:"비포·애프터 나란히",checked:false,p:"비포·애프터 나란히 배치, 실제 결과·수치 스크린샷 노출"},
+    ]},
+    {id:'B4',name:'시선 끄는 오브제',items:[
+      {id:'i22',t:"시선 끄는 오브제",ex:"'이게 뭐지?' 싶은 소품",checked:false,p:"귀여움(고양이 얼굴 덮개 등), 감성 무드 아이템, '이게 뭐지?' 기시감 파괴 특이 소품"},
+    ]},
+  ]},
+  {id:'C',label:'🙋 인물 — 행동·표정·상황',icon:'🙋',open:false,subs:[
+    {id:'C1',name:'행동·표정·제스처',items:[
+      {id:'i23',t:"역동적 등장·말걸기",ex:"마이크 들고 말 걸기",checked:false,p:"화면 밖에서 진입하거나 마이크 들고 카메라를 응시하며 직접 말 걸기"},
+      {id:'i24',t:"과장 표정·눈맞춤",ex:"놀란 표정으로 카메라 응시",checked:false,p:"놀람·감탄 등 과장된 리액션과 표정, 카메라 직접 응시로 눈맞춤"},
+      {id:'i25',t:"제스처·몸짓",ex:"손가락으로 콕 지목",checked:false,p:"손가락 지목·제품 들어올리기, 댄스·퍼포먼스 인트로 등 큰 몸짓"},
+    ]},
+    {id:'C2',name:'상황·배경 연출',items:[
+      {id:'i26',t:"상황·배경 연출",ex:"문제 상황 먼저 보여주기",checked:false,p:"문제 상황(비포)을 먼저 노출, 이색·고급 또는 익숙한 생활공간 대비, 여러 사람 동시 리액션"},
+    ]},
+  ]},
+  {id:'D',label:'🔊 사운드 — 효과음·음악·목소리',icon:'🔊',open:false,subs:[
+    {id:'D1',name:'효과음·음악',items:[
+      {id:'i27',t:"초반 효과음 (요술봉·클릭)",ex:"요술봉·띠링·클릭 사운드",checked:false,p:"영상 분위기에 맞는 가벼운 효과음을 초반에 삽입 — 요술봉·띠링·타자·클릭처럼 크리에이터들이 흔히 쓰는 자연스러운 사운드. 강한 베이스 드롭처럼 과하고 자극적인 사운드는 오히려 이탈을 부르니 피한다."},
+      {id:'i28',t:"트렌디 음악·밈",ex:"요즘 유행하는 음악",checked:false,p:"지금 유행하는 음악이나 밈 사운드를 그대로 활용해 트렌드 분위기를 입힌다."},
+    ]},
+    {id:'D2',name:'보이스 톤·속도',items:[
+      {id:'i29',t:"보이스 톤·속도",ex:"1.2~1.5배속",checked:false,p:"속사포 빠른 템포, 낮고 권위 있는 목소리, 속삭임·강조 변조 대비"},
+    ]},
+  ]},
+];
+
+let idCounter = 1000;
+const uid = () => 'u' + (++idCounter);
+let editCatId = null, editSubRef = null, editItemRef = null;
+let selectedEmoji = '💬', selectedTag = 'none', confirmCb = null;
+
+const getCat = id => data.find(c=>c.id===id);
+const getSub = (cid,sid) => getCat(cid)?.subs.find(s=>s.id===sid);
+const getItem = (cid,sid,iid) => getSub(cid,sid)?.items.find(i=>i.id===iid);
+
+// ======= PERSISTENCE (localStorage) =======
+const STORAGE_KEY = '3sec-hook-checklist-v6';
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) { /* private mode / quota */ }
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) { const parsed = JSON.parse(raw); if(Array.isArray(parsed) && parsed.length) data = parsed; }
+  } catch(e) { /* corrupt data → keep defaults */ }
+}
+
+// ======= RENDER =======
+function render() {
+  document.getElementById('cat-list').innerHTML = '';
+  data.forEach(cat => document.getElementById('cat-list').appendChild(renderCat(cat)));
+  updateGlobalStat();
+  updateCheckedPreview();
+  saveState();
+}
+
+function renderCat(cat) {
+  const total = cat.subs.reduce((a,s)=>a+s.items.length,0);
+  const done = cat.subs.reduce((a,s)=>a+s.items.filter(i=>i.checked).length,0);
+  const card = document.createElement('div');
+  card.className = 'cat-card'; card.id = 'cat-'+cat.id;
+  const header = document.createElement('div');
+  header.className = 'cat-header';
+  header.innerHTML = `
+    <div class="cat-icon">${cat.icon}</div>
+    <span class="cat-name">${esc(cat.label)}</span>
+    <span class="progress-text">${done}/${total}</span>
+    <div class="cat-actions">
+      <button class="btn btn-ghost btn-icon" title="메뉴" onclick="catMenu('${cat.id}',event)">⋯</button>
+    </div>
+    <span class="chevron ${cat.open?'open':''}">▼</span>`;
+  header.addEventListener('click', e => { if(e.target.closest('.cat-actions')) return; cat.open=!cat.open; render(); });
+  card.appendChild(header);
+  const body = document.createElement('div');
+  body.className = 'cat-body'+(cat.open?' open':'');
+  cat.subs.forEach((sub, idx) => body.appendChild(renderSub(cat.id, sub, idx)));
+  const addSubBar = document.createElement('div');
+  addSubBar.className = 'add-sub-bar';
+  addSubBar.innerHTML = `<input type="text" id="new-sub-${cat.id}" placeholder="새로운 소분류 추가..." style="flex:1; background: var(--surface); border-color: transparent;" onkeydown="if(event.key==='Enter')addSub('${cat.id}')"><button class="btn btn-sm" onclick="addSub('${cat.id}')">+ 소분류</button>`;
+  body.appendChild(addSubBar);
+  card.appendChild(body);
+  return card;
+}
+
+function renderSub(catId, sub, idx) {
+  if(sub.open === undefined) sub.open = (idx === 0); // 맨 위 소분류만 펼침
+  const total = sub.items.length;
+  const done = sub.items.filter(i=>i.checked).length;
+  const wrap = document.createElement('div');
+  wrap.className = 'sub-section'; wrap.id = 'sub-'+sub.id;
+  const sh = document.createElement('div'); sh.className = 'sub-header';
+  sh.innerHTML = `<span class="chevron sub-chevron ${sub.open?'open':''}">▼</span><span class="sub-name">${esc(sub.name)}</span><span class="sub-count">${done}/${total}</span><div class="sub-actions"><button class="btn btn-ghost btn-icon" onclick="subMenu('${catId}','${sub.id}',event)">⋯</button></div>`;
+  sh.addEventListener('click', e => { if(e.target.closest('.sub-actions')) return; sub.open = !sub.open; render(); });
+  wrap.appendChild(sh);
+  if(sub.open) {
+    sub.items.forEach(item => wrap.appendChild(renderItem(catId, sub.id, item)));
+    const aib = document.createElement('div'); aib.className = 'add-item-bar';
+    aib.innerHTML = `<input type="text" id="new-item-${sub.id}" placeholder="항목 추가..." style="flex:1; background: transparent; border-color: transparent;" onkeydown="if(event.key==='Enter')addItem('${catId}','${sub.id}')"><button class="btn btn-sm" onclick="addItem('${catId}','${sub.id}')">+ 추가</button>`;
+    wrap.appendChild(aib);
+  }
+  return wrap;
+}
+
+function renderItem(catId, subId, item) {
+  const row = document.createElement('div');
+  row.className = 'item-row'+(item.checked?' checked':''); row.id='item-'+item.id;
+  const exHtml = item.ex ? `<span class="item-ex">${esc(item.ex)}</span>` : '';
+  row.innerHTML = `<div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-main"><span class="item-text">${esc(item.t)}</span>${exHtml}</div><div class="item-actions"><button class="btn btn-ghost btn-icon" onclick="openEditItem('${catId}','${subId}','${item.id}',event)">✏️</button><button class="btn btn-ghost btn-icon" onclick="deleteItem('${catId}','${subId}','${item.id}',event)">🗑️</button></div>`;
+  row.addEventListener('click', e => {
+    if(e.target.closest('.item-actions')) return;
+    item.checked = !item.checked;
+    row.classList.toggle('checked');
+    updateGlobalStat(); updateCheckedPreview();
+    const cat = getCat(catId);
+    const total = cat.subs.reduce((a,s)=>a+s.items.length,0);
+    const done = cat.subs.reduce((a,s)=>a+s.items.filter(i=>i.checked).length,0);
+    const cc = document.getElementById('cat-'+catId);
+    if(cc){ const pt = cc.querySelector('.progress-text'); if(pt) pt.textContent=done+'/'+total; }
+    const sub = getSub(catId, subId);
+    const sc = document.querySelector('#sub-'+subId+' .sub-count');
+    if(sc && sub){ sc.textContent = sub.items.filter(i=>i.checked).length+'/'+sub.items.length; }
+    saveState();
+  });
+  return row;
+}
+
+// ======= CHECKED PREVIEW =======
+function updateCheckedPreview() {
+  const checkedItems = [];
+  data.forEach(c=>c.subs.forEach(s=>s.items.forEach(i=>{ if(i.checked) checkedItems.push(i.t); })));
+  const preview = document.getElementById('checked-tags-preview');
+  const countLabel = document.getElementById('check-count-label');
+  countLabel.textContent = `(${checkedItems.length}개)`;
+  if(checkedItems.length === 0) {
+    preview.innerHTML = '<span class="empty-tags">좌측 체크리스트에서 요소를 선택하면 자동 반영돼요</span>';
+  } else {
+    preview.innerHTML = checkedItems.map(t=>`<span class="checked-tag">${esc(t.split('—')[0].trim())}</span>`).join('');
+  }
+}
+
+// ======= AI GENERATION (프롬프트 복사 방식) =======
+function generateHooks() {
+  const topic = document.getElementById('topic-input').value.trim();
+  const reference = document.getElementById('reference-input').value.trim();
+  
+  if(!topic) { 
+    alert('영상 주제나 첫 문장 아이디어를 입력해주세요.');
+    document.getElementById('topic-input').focus(); 
+    return; 
+  }
+
+  const template = getSelectedPills('tpl-group')[0] || '(선택 안 함 — 주제에 맞게 알아서 판단)';
+  const goals = getSelectedPills('goal-group');
+  const emotions = getSelectedPills('emotion-group');
+  const trust = getSelectedPills('trust-group');
+  const trustDetail = document.getElementById('trust-detail').value.trim();
+
+  const checkedItems = [];
+  data.forEach(c=>c.subs.forEach(s=>s.items.forEach(i=>{ if(i.checked) checkedItems.push(i.p || i.t); })));
+
+  const btnText = document.getElementById('gen-btn-text');
+  btnText.textContent = '생성 완료!';
+  document.getElementById('result-dot').style.background = 'var(--green)';
+
+  const goalStr = goals.length ? goals.join(', ') : '(미선택 — 주제에 맞게 판단)';
+  const emotionStr = emotions.length ? emotions.join(', ') : '(미선택 — 주제에 맞게 판단)';
+
+  const trustList = trust.filter(t=>t!=='없음');
+  let trustStr;
+  if(trust.includes('없음') && trustList.length===0 && !trustDetail){
+    trustStr = '(없음 — 증거 없이도 설득되는 후킹으로 구성)';
+  } else {
+    const parts = [];
+    if(trustList.length) parts.push(trustList.join(', '));
+    if(trustDetail) parts.push(`구체적 근거: "${trustDetail}"`);
+    trustStr = parts.length ? parts.join(' / ') : '(미입력)';
+  }
+
+  const refStr = reference || '(입력 안함)';
+  const imgMode = document.getElementById('img-mode').checked;
+
+  const baseInfo =
+`[기본 정보]
+- 영상 템플릿(성격): ${template}
+- 영상 주제 / 첫 문장: ${topic}
+- 영상 목표: ${goalStr}
+- 유발하고 싶은 감정(가장 중요): ${emotionStr}
+- 신뢰·증거 요소: ${trustStr}
+- 레퍼런스 영상 / 차별화 포인트: ${refStr}`;
+
+  const finalSpec =
+`서로 다른 심리 트리거 기반의 3초 후킹 전략을 최소 3개(예: 공포형 / 공감형 / 호기심형) 제시하고, 각 전략마다 아래 4가지를 작성하세요.
+1) 시청자 심리 분석 — 왜 이 후킹이 먹히는지 1문장으로 분석
+2) 3초 킬러 대본 — 입으로 직접 읽었을 때 자연스러운 구어체 대본 2줄 이내
+3) 현장 촬영 디렉션 — 카메라 앵글·조명·오브제 활용법을 구체적인 수치나 동작으로 제시
+4) 기시감 타파 전략 — 시청자가 스킵하지 않게 만드는 '예상 밖의 한 끗'`;
+
+  const titleRule =
+`[제목·첫 문장 작성 규칙]
+- 첫 문장은 보통 영상 제목이 됩니다. 가능하면 구체적인 숫자를 넣어 시청자가 구체적으로 상상하게 만들고, 되도록 15자 이내로 짧게 쓰세요.
+- 예: '1억 모은 사람들이 절대 안 하는 소비 5가지', '1분 만에 집중력 2배 높이는 법'
+- ★표본 넓히기(중요)★: 어렵거나 전문 용어가 들어가면, 더 많은 사람이 반응하도록 한 단계 상위의 쉬운 개념으로 풀어서 바꾸세요. 소수만 아는 좁은 단어 → 누구나 아는 넓은 표현.
+- 표본 넓히기 예시:
+  · '램값이 오른 이유' → '컴퓨터 가격이 오른 이유'
+  · '위빠사나 명상법의 장점' → '부처님이 했다는 명상법'
+  · '멜로딕 덥스텝 1위 한 노래' → '요즘 페스티벌에서 제일 인기라는 장르'
+- 단, 전문 용어가 오히려 호기심을 자극하거나 타깃에게 익숙한 경우에는 그대로 두어도 됩니다. 어려워서 시청자 풀을 좁힐 때만 쉽게 바꾸세요.`;
+
+  const principles =
+`[반드시 따를 원칙]
+1. 레퍼런스의 성공 원인은 활용하되, 시청자가 기시감을 느끼지 않도록 구조를 변형할 것
+2. 타깃 시청자가 현재 겪는 문제와 감정을 첫 3초 안에 건드릴 것
+3. 영상 목표(판매·팔로우·브랜딩 등)에 맞게 후킹을 설계할 것
+4. 시청자가 끝까지 볼 이유를 반드시 남길 것
+5. 후킹 멘트는 실제 사람이 말하는 구어체로 작성할 것
+6. 추상적인 표현 대신 구체적인 숫자·사례·손실·결과를 활용할 것
+7. 신뢰·증거 요소가 입력된 경우, 그것을 활용한 신뢰 문장을 대본에 자연스럽게 녹일 것`;
+
+  const formatBlock = imgMode
+    ? `[출력 형식]\n- 먼저 위 전략을 글로 정리한 뒤, 마지막에 3초 흐름을 한눈에 보여주는 '한 장짜리 스토리보드 이미지' 1장을 생성하세요. (3~4컷을 한 이미지에 가로로 배치하고, 각 컷에 멘트와 연출을 짧은 캡션으로 표기)`
+    : `[출력 형식]\n- 모든 결과는 글(텍스트)로만 작성하세요. 스토리보드를 이미지로 그리지 말고, 각 장면을 글로 설명하세요.`;
+
+  const handoffBlock =
+`[숏폼 대본으로 넘기기]
+맨 마지막에, 위에서 만든 후킹 중 가장 강력한 1개를 아래 형식으로 한 번 더 정리해 주세요. (숏폼 대본 생성기의 '3초 후킹 결과 입력'란에 그대로 복사·붙여넣기 할 수 있게)
+─── 복사용 ───
+첫 문장(후킹): (가장 강력한 첫 문장 1개)
+3초 흐름 요약: (0~3초에 무엇을 보여주고 무슨 말을 하는지 1~2줄)
+─────────────`;
+
+  let promptText;
+  if(mode === 'ai') {
+    promptText =
+`당신은 숏폼 알고리즘을 완벽히 이해하는 콘텐츠 디렉터입니다.
+아래 [기본 정보]와 [후킹 요소 목록]을 보고, 이 영상에 가장 잘 맞는 후킹 요소를 직접 골라 제안한 뒤, 제가 고르면 '즉시 촬영 가능한 3초 스토리보드'를 설계하세요.
+
+${baseInfo}
+
+[후킹 요소 목록] (반드시 이 안에서만 골라주세요)
+${buildCatalog()}
+
+[진행 방식 — 매우 중요]
+1단계 (지금 바로): 위 목록에서 이 영상에 가장 효과적일 후킹 요소를 5~7개 추천하고, 각각 왜 이 영상에 적합한지 한 줄로 설명하세요. 그런 다음 "이 중 실제로 사용할 요소를 골라주세요 (번호로 답하셔도 됩니다)"라고 저에게 질문하고 멈추세요.
+★ 1단계에서는 절대 최종 결과(대본·연출)를 미리 만들지 마세요. 추천과 질문까지만 하고 멈춥니다. ★
+2단계 (제가 선택을 답한 뒤): 제가 고른 요소만 반영해서 아래 [최종 출력]을 작성하세요.
+
+[최종 출력] (제가 요소를 선택한 다음에만 작성)
+${finalSpec}
+
+${titleRule}
+
+${principles}
+
+${formatBlock}
+
+${handoffBlock}`;
+  } else {
+    const checkedStr = checkedItems.length > 0
+      ? checkedItems.map((t,i) => `  ${i+1}. ${t}`).join('\n')
+      : '(선택 안 함 — 위의 감정/목표에 맞는 후킹 요소를 알아서 구성)';
+    promptText =
+`당신은 숏폼 알고리즘을 완벽히 이해하는 콘텐츠 디렉터입니다.
+아래 정보를 바탕으로, 단순히 아이디어를 제안하는 것이 아니라 '즉시 촬영 가능한 3초 스토리보드'를 설계하세요.
+
+${baseInfo}
+- 참고할 후킹 요소:
+${checkedStr}
+
+[출력 요구사항]
+${finalSpec}
+
+${titleRule}
+
+${principles}
+
+${formatBlock}
+
+${handoffBlock}`;
+  }
+
+  renderPromptResult(promptText);
+  
+  setTimeout(() => {
+    btnText.textContent = '⚡ 프롬프트 생성';
+  }, 1000);
+}
+
+function renderPromptResult(promptText, bodyId) {
+  const rb = document.getElementById(bodyId || 'result-body');
+  const carryBtn = (app === 'hook')
+    ? `<button class="btn" onclick="carryToScript()" style="width: 100%; padding: 12px; margin-top: 10px; font-size: 14px; font-weight: 700; display: flex; justify-content: center; gap: 8px;">📝 이 정보로 숏폼 대본 만들기 →</button>`
+    : '';
+  rb.innerHTML = `
+    <div class="result-section" style="margin-bottom: 0;">
+      <div class="result-section-label" style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 12px;">
+        <span>🤖 AI 프롬프트 완성</span>
+      </div>
+      <textarea class="generated-prompt" readonly style="width: 100%; height: 440px; margin-top: 5px; margin-bottom: 16px; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; line-height: 1.6; padding: 16px; background: rgba(0,0,0,0.2); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); resize: vertical;">${esc(promptText)}</textarea>
+      
+      <button class="btn btn-primary" onclick="copyPrompt(event)" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 700; display: flex; justify-content: center; gap: 8px;">
+        📋 프롬프트 복사하기
+      </button>
+      ${carryBtn}
+    </div>
+    <div style="font-size: 13px; color: var(--text3); text-align: center; margin-top: 16px; line-height: 1.6;">
+      위 프롬프트를 복사하여<br>ChatGPT, Claude, Gemini 등에 붙여넣기 하세요.
+    </div>
+  `;
+}
+
+function copyPrompt(event) {
+  const promptTextarea = event.currentTarget.closest('.result-section').querySelector('.generated-prompt');
+  
+  promptTextarea.select();
+  promptTextarea.setSelectionRange(0, 99999);
+  
+  try {
+    document.execCommand('copy');
+    const copyBtn = event.currentTarget;
+    const originalText = copyBtn.innerHTML;
+    copyBtn.innerHTML = '✅ 클립보드에 복사되었습니다!';
+    copyBtn.style.background = 'var(--green)';
+    
+    setTimeout(() => {
+      copyBtn.innerHTML = originalText;
+      copyBtn.style.background = 'var(--accent)';
+    }, 2000);
+  } catch (err) {
+    alert('복사에 실패했습니다. 텍스트를 직접 드래그해서 복사해주세요.');
+  }
+}
+
+// ======= ADD =======
+function addSub(catId) {
+  const inp = document.getElementById('new-sub-'+catId);
+  const name = inp.value.trim(); if(!name) return;
+  getCat(catId).subs.push({id:uid(),name,open:true,items:[]}); inp.value=''; render(); getCat(catId).open=true;
+}
+function addItem(catId, subId) {
+  const inp = document.getElementById('new-item-'+subId);
+  const text = inp.value.trim(); if(!text) return;
+  getSub(catId,subId).items.push({id:uid(),t:text,ex:'',checked:false});
+  inp.value=''; render(); getCat(catId).open=true;
+}
+
+// ======= EDIT =======
+function openEditCat(catId, e) {
+  e.stopPropagation(); editCatId=catId;
+  const cat=getCat(catId);
+  document.getElementById('edit-cat-name').value=cat.label;
+  selectedEmoji=cat.icon; buildEmojiGrid(); openModal('modal-cat');
+}
+function buildEmojiGrid() {
+  const grid=document.getElementById('emoji-grid'); grid.innerHTML='';
+  EMOJIS.forEach(em=>{ const btn=document.createElement('button'); btn.className='emoji-btn'+(em===selectedEmoji?' selected':''); btn.textContent=em; btn.onclick=()=>{selectedEmoji=em;buildEmojiGrid();}; grid.appendChild(btn); });
+}
+function saveCategory() {
+  const cat=getCat(editCatId);
+  cat.label=document.getElementById('edit-cat-name').value.trim()||cat.label;
+  cat.icon=selectedEmoji; closeModal('modal-cat'); render();
+}
+function openEditSub(catId,subId,e) {
+  e.stopPropagation(); editSubRef={catId,subId};
+  document.getElementById('edit-sub-name').value=getSub(catId,subId).name; openModal('modal-sub');
+}
+function saveSub() {
+  const {catId,subId}=editSubRef; const sub=getSub(catId,subId);
+  sub.name=document.getElementById('edit-sub-name').value.trim()||sub.name; closeModal('modal-sub'); render();
+}
+function openEditItem(catId,subId,itemId,e) {
+  e.stopPropagation(); editItemRef={catId,subId,itemId};
+  const item=getItem(catId,subId,itemId);
+  document.getElementById('edit-item-text').value=item.t;
+  document.getElementById('edit-item-ex').value=item.ex||'';
+  openModal('modal-item');
+}
+function saveItem() {
+  const {catId,subId,itemId}=editItemRef; const item=getItem(catId,subId,itemId);
+  item.t=document.getElementById('edit-item-text').value.trim()||item.t;
+  item.ex=document.getElementById('edit-item-ex').value.trim();
+  closeModal('modal-item'); render();
+}
+
+// ======= DELETE =======
+function deleteCat(catId,e){ e.stopPropagation(); showConfirm('카테고리 삭제','이 카테고리와 모든 하위 항목이 삭제됩니다.',()=>{ data=data.filter(c=>c.id!==catId); render(); }); }
+function deleteSub(catId,subId,e){ e.stopPropagation(); showConfirm('소분류 삭제','이 소분류와 모든 항목이 삭제됩니다.',()=>{ getCat(catId).subs=getCat(catId).subs.filter(s=>s.id!==subId); render(); }); }
+function deleteItem(catId,subId,itemId,e){ e.stopPropagation(); showConfirm('항목 삭제','이 항목을 삭제합니다.',()=>{ getSub(catId,subId).items=getSub(catId,subId).items.filter(i=>i.id!==itemId); render(); }); }
+
+// ======= MODAL =======
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-backdrop').forEach(el=>el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); }));
+
+// ======= CONFIRM =======
+function showConfirm(title,desc,cb){ document.getElementById('confirm-title').textContent=title; document.getElementById('confirm-desc').textContent=desc; confirmCb=cb; document.getElementById('confirm-dialog').classList.add('open'); }
+function closeConfirm(){ document.getElementById('confirm-dialog').classList.remove('open'); confirmCb=null; }
+document.getElementById('confirm-ok').onclick=()=>{ if(confirmCb)confirmCb(); closeConfirm(); };
+document.getElementById('confirm-dialog').addEventListener('click',e=>{ if(e.target===document.getElementById('confirm-dialog'))closeConfirm(); });
+
+// ======= UTILS =======
+function updateGlobalStat(){ let t=0,d=0; data.forEach(c=>c.subs.forEach(s=>s.items.forEach(i=>{ t++; if(i.checked)d++; }))); document.getElementById('global-stat').textContent=d+' / '+t; }
+function esc(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function resetAll(){ showConfirm('전체 초기화','현재 체크리스트의 모든 체크를 해제합니다.',()=>{ if(app==='script'){ scriptData.forEach(c=>c.items.forEach(i=>{ i.checked=false; })); renderScript(); } else { data.forEach(c=>c.subs.forEach(s=>s.items.forEach(i=>{ i.checked=false; }))); render(); } }); }
+function exportJSON(){ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='3초후킹_체크리스트.json'; a.click(); }
+
+// ======= INPUT PILLS (템플릿/목표/감정/신뢰) =======
+function togglePill(el){
+  const group = el.parentElement;
+  if(group.dataset.single){ // 단일 선택: 같은 그룹 내 나머지 해제
+    const wasSelected = el.classList.contains('selected');
+    group.querySelectorAll('.pill').forEach(p=>p.classList.remove('selected'));
+    if(!wasSelected) el.classList.add('selected');
+  } else {
+    el.classList.toggle('selected');
+  }
+}
+function getSelectedPills(groupId){
+  return [...document.querySelectorAll('#'+groupId+' .pill.selected')].map(p=>p.textContent.trim());
+}
+
+// ======= AI CARD COLLAPSE =======
+function toggleAiCard(){
+  const card = document.querySelector('.ai-input-card');
+  card.classList.toggle('collapsed');
+  document.getElementById('ai-chevron').classList.toggle('open', !card.classList.contains('collapsed'));
+}
+
+// ======= ⋯ DROPDOWN MENU =======
+const NOEV = { stopPropagation(){} };
+function openMenu(e, actions){
+  e.stopPropagation();
+  const menu = document.getElementById('ctx-menu');
+  menu.innerHTML = actions.map((a,i)=>`<button class="ctx-item${a.danger?' danger':''}" data-i="${i}">${a.label}</button>`).join('');
+  menu.querySelectorAll('.ctx-item').forEach(b=>{
+    b.addEventListener('click', ev=>{ ev.stopPropagation(); menu.style.display='none'; actions[+b.dataset.i].fn(); });
+  });
+  menu.style.display = 'block';
+  const r = e.currentTarget.getBoundingClientRect();
+  let left = r.right - menu.offsetWidth;
+  if(left < 8) left = 8;
+  menu.style.left = (left + window.scrollX) + 'px';
+  menu.style.top = (r.bottom + 4 + window.scrollY) + 'px';
+}
+function catMenu(catId, e){ openMenu(e, [
+  {label:'✏️ 편집', fn:()=>openEditCat(catId, NOEV)},
+  {label:'🗑️ 삭제', danger:true, fn:()=>deleteCat(catId, NOEV)},
+]); }
+function subMenu(catId, subId, e){ openMenu(e, [
+  {label:'✏️ 편집', fn:()=>openEditSub(catId, subId, NOEV)},
+  {label:'🗑️ 삭제', danger:true, fn:()=>deleteSub(catId, subId, NOEV)},
+]); }
+document.addEventListener('click', ()=>{ document.getElementById('ctx-menu').style.display='none'; });
+
+// 전체 후킹 요소 카탈로그 (AI 제안 프롬프트에 전달)
+function buildCatalog(){
+  return data.map(c=>{
+    const lines = c.subs.flatMap(s=>s.items.map(i=>`  · ${i.t}: ${i.p || i.ex || ''}`)).join('\n');
+    return `${c.label || c.name || ''}\n${lines}`;
+  }).join('\n\n');
+}
+
+/* =========================================================
+   숏폼 대본 체크리스트 (데이터 / 구조 / 렌더 / 생성)
+   ========================================================= */
+let scriptData = [
+  {id:'R', label:'🔁 리텐션·구조', icon:'🔁', open:true, items:[
+    {id:'sr1', t:'루프 가능성', ex:'마지막 컷이 첫 컷과 자연스럽게 이어지는가', p:'마지막 장면이 첫 장면과 자연스럽게 연결되어 영상이 무한 반복 재생되도록 설계 (루프 시청으로 재생 수·시청 시간 상승)'},
+    {id:'sr2', t:'커버(첫 프레임)', ex:'첫 정지화면이 썸네일 역할을 하는가', p:'영상의 첫 정지 프레임이 그 자체로 썸네일/커버 역할을 하도록, 멈췄을 때도 클릭하고 싶은 강력한 첫 화면 구성'},
+  ]},
+  {id:'C', label:'💬 자막', icon:'💬', open:false, items:[
+    {id:'sc1', t:'자막 오버레이', ex:'핵심·후킹 문장이 화면 텍스트로 박혀 있는가', p:'핵심 메시지와 후킹 문장을 화면 자막으로 노출 (무음 시청 대응 + 메시지 강조)'},
+    {id:'sc2', t:'자막-화면 싱크', ex:'자막 전환과 화면 전환 타이밍이 일치하는가', p:'자막 전환 타이밍과 컷/화면 전환 타이밍을 일치시켜 리듬감 부여'},
+  ]},
+  {id:'E', label:'✂️ 편집', icon:'✂️', open:false, items:[
+    {id:'se1', t:'빠른 전환', ex:'최소 2초당 1회 이상 컷 전환', p:'최소 2초에 1회 이상 컷을 전환해 지루할 틈 없이 화면에 변화를 주기'},
+    {id:'se2', t:'효과음', ex:'최소 2초당 1회 이상 효과음', p:'최소 2초에 1회 이상 효과음 삽입 (영상 분위기에 맞는 가벼운 클릭·요술봉 사운드 위주, 강한 베이스 드롭은 지양)'},
+  ]},
+  {id:'A', label:'🎙️ 촬영·오디오', icon:'🎙️', open:false, items:[
+    {id:'sa1', t:'음성 레벨', ex:'표준 레벨인가 (깨지거나 작지 않음)', p:'음성이 표준 레벨로 또렷하게 들리는지 (클리핑으로 깨지거나 너무 작지 않게)'},
+    {id:'sa2', t:'수평·화각', ex:'수평이 맞고 안정적인 화각', p:'수평이 맞고 안정적인 화각으로 촬영 (흔들림·기울어짐 없이)'},
+  ]},
+];
+
+const scriptStructures = [
+  {name:'계속 다음이 궁금하게', guide:'0초에 "판돈·약속"을 제시 → 매 구간마다 다음 구간을 미리 예고 → 스케일·긴장을 점점 키움 → 마지막에 큰 보상. 지루한 구간 없이. (미스터비스트식)'},
+  {name:'문제 → 키우기 → 해결', guide:'문제를 제시 → 그냥 두면 어떻게 되는지 고통을 키움 → 해결책 제시. (PAS)'},
+  {name:'전후 비교 먼저 보여주기', guide:'한심한 Before → 부러운 After를 먼저 보여줌 → "어떻게 했는지"를 다리 삼아 방법으로 연결. (BAB)'},
+  {name:'N가지로 정리해주기', guide:'"3가지"처럼 숫자로 약속 → 항목을 빠르게 나열 → 마지막에 보너스 하나. (리스트형)'},
+  {name:'궁금증 던지고 끝에 답 주기', guide:'초반에 떡밥·질문을 던짐 → 답을 일부러 미룸 → 마지막에 회수. (오픈루프형)'},
+  {name:'통념 깨기 (반전 주장)', guide:'"다들 X 하라는데 사실 틀렸다" → 통념을 깸 → 진짜 이유 설명. (역발상형)'},
+  {name:'경험담·이야기 들려주기', guide:'상황 설정 → 갈등·실패 → 반전·해결로 마무리. (스토리텔링형)'},
+  {name:'따라 하기 단계별 설명', guide:'1 → 2 → 3 단계로 군더더기 없이 방법을 알려줌. (튜토리얼형)'},
+];
+
+const SCRIPT_KEY = '3sec-script-checklist-v1';
+function saveScriptState(){ try { localStorage.setItem(SCRIPT_KEY, JSON.stringify(scriptData)); } catch(e) {} }
+function loadScriptState(){
+  try { const raw = localStorage.getItem(SCRIPT_KEY); if(raw){ const p = JSON.parse(raw); if(Array.isArray(p)&&p.length) scriptData = p; } } catch(e) {}
+}
+
+function renderScript(){
+  ensureStructurePills();
+  const list = document.getElementById('script-cat-list');
+  list.innerHTML = '';
+  scriptData.forEach(cat => list.appendChild(renderScriptCat(cat)));
+  updateScriptPreview();
+  saveScriptState();
+}
+function renderScriptCat(cat){
+  if(cat.open === undefined) cat.open = true;
+  const total = cat.items.length, done = cat.items.filter(i=>i.checked).length;
+  const card = document.createElement('div'); card.className = 'cat-card'; card.id = 'scat-'+cat.id;
+  const header = document.createElement('div'); header.className = 'cat-header';
+  header.innerHTML = `<div class="cat-icon">${cat.icon}</div><span class="cat-name">${esc(cat.label)}</span><span class="progress-text">${done}/${total}</span><span class="chevron ${cat.open?'open':''}">▼</span>`;
+  header.addEventListener('click', ()=>{ cat.open = !cat.open; renderScript(); });
+  card.appendChild(header);
+  const body = document.createElement('div'); body.className = 'cat-body'+(cat.open?' open':'');
+  cat.items.forEach(item => body.appendChild(renderScriptItem(cat.id, item)));
+  card.appendChild(body);
+  return card;
+}
+function renderScriptItem(catId, item){
+  const row = document.createElement('div'); row.className = 'item-row'+(item.checked?' checked':'');
+  const exHtml = item.ex ? `<span class="item-ex">${esc(item.ex)}</span>` : '';
+  row.innerHTML = `<div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-main"><span class="item-text">${esc(item.t)}</span>${exHtml}</div>`;
+  row.addEventListener('click', ()=>{ item.checked = !item.checked; renderScript(); });
+  return row;
+}
+function updateScriptPreview(){
+  const checked = [];
+  scriptData.forEach(c=>c.items.forEach(i=>{ if(i.checked) checked.push(i.t); }));
+  const preview = document.getElementById('script-checked-preview');
+  document.getElementById('script-check-count').textContent = `(${checked.length}개)`;
+  preview.innerHTML = checked.length
+    ? checked.map(t=>`<span class="checked-tag">${esc(t)}</span>`).join('')
+    : '<span class="empty-tags">좌측에서 체크하면 \'반드시 충족할 조건\'으로 반영돼요</span>';
+}
+
+function ensureStructurePills(){
+  const g = document.getElementById('structure-group');
+  if(g.children.length) return;
+  scriptStructures.forEach(s=>{
+    const el = document.createElement('span'); el.className = 'pill'; el.textContent = s.name;
+    el.addEventListener('click', ()=>{ togglePill(el); updateStructureGuide(); });
+    g.appendChild(el);
+  });
+}
+function updateStructureGuide(){
+  const sel = document.querySelector('#structure-group .pill.selected');
+  const guide = document.getElementById('structure-guide');
+  if(!sel){ guide.classList.remove('show'); guide.innerHTML = ''; return; }
+  const st = scriptStructures.find(s=>s.name === sel.textContent.trim());
+  guide.innerHTML = `<b>${esc(st.name)} 골격</b><br>${esc(st.guide)}`;
+  guide.classList.add('show');
+}
+
+function scriptCriteriaCatalog(){
+  return scriptData.map(c=>`${c.label}\n`+c.items.map(i=>`  · ${i.t}: ${i.p}`).join('\n')).join('\n\n');
+}
+function scriptStructureCatalog(){
+  return scriptStructures.map((s,i)=>`  ${i+1}. ${s.name}: ${s.guide}`).join('\n');
+}
+
+function generateScript(){
+  const goals = getSelectedPills('script-goal-group');
+  const message = document.getElementById('message-input').value.trim();
+  const single = document.getElementById('single-msg-check').checked;
+  const hookResult = document.getElementById('script-hook-input').value.trim();
+  const structPill = document.querySelector('#structure-group .pill.selected');
+  const struct = structPill ? scriptStructures.find(s=>s.name === structPill.textContent.trim()) : null;
+
+  if(!message && !hookResult){
+    alert('영상 주제·핵심 메시지나 3초 후킹 결과를 입력해주세요.');
+    document.getElementById('message-input').focus();
+    return;
+  }
+
+  const reference = document.getElementById('script-reference-input').value.trim();
+
+  const goalStr = goals.length ? goals.join(', ') : '(미선택 — 주제에 맞게 판단)';
+  const msgStr = message
+    ? `${message}${single ? '\n  (★메시지는 반드시 하나로 단순하게 유지. 곁가지·중복 주제 금지)' : ''}`
+    : '(미입력 — 아래 3초 후킹/정보에서 핵심 메시지 1개를 직접 정해서 진행)';
+  const hookStr = hookResult || '(입력 안 함)';
+  const refStr = reference || '(입력 안 함)';
+  const fullStructList = scriptStructureCatalog();
+
+  let structBlock;
+  if(mode === 'ai'){
+    structBlock = struct
+      ? `선호 구조 = ${struct.name} (${struct.guide})\n  → 이 구조를 우선 고려하되, 주제에 더 잘 맞는 게 있으면 아래 목록에서 다른 구조를 추천해도 됩니다.\n  [선택 가능한 구조]\n${fullStructList}`
+      : `(미선택) — 아래 목록에서 이 주제에 가장 잘 맞는 구조를 직접 추천하세요.\n${fullStructList}`;
+  } else {
+    structBlock = struct
+      ? `${struct.name}\n  골격: ${struct.guide}`
+      : `(미선택) — 아래 8가지 중 이 주제에 가장 잘 맞는 구조를 먼저 1개 고르고, 왜 골랐는지 1줄로 설명한 뒤 그 골격대로 작성하세요.\n${fullStructList}`;
+  }
+
+  const planBlock =
+`[기획]
+- 영상 목표: ${goalStr}
+- 영상 주제 / 핵심 메시지 / 정보: ${msgStr}
+- 3초 후킹 / 첫 문장: ${hookStr}
+- 레퍼런스 영상 / 차별화 포인트: ${refStr}
+- 영상 구조: ${structBlock}`;
+
+  const recoStep = (mode === 'ai')
+    ? '\n0) 추천 구조: 위 \'영상 구조\' 목록에서 이 영상에 가장 적합한 구조 1개를 골라 추천하고, 왜 그 구조인지 1줄로 설명'
+    : '';
+  const outputSpec =
+`[출력 요구사항]${recoStep}
+1) 타임라인 대본: 0초부터 초 단위 구간으로 나누고, 각 구간마다 [화면·연출] / [멘트(구어체)] / [자막] / [효과음·편집] 4줄로 작성
+2) 길이: 30~45초 기준 (주제에 맞게 조정 가능)
+3) 선택(추천)한 구조 골격의 각 단계가 대본 어디에 해당하는지 표시
+4) 마지막에 적용한 제작 체크리스트를 실제로 충족했는지 ✅/⚠️ 셀프 점검표로 정리`;
+
+  const principles =
+`[반드시 따를 원칙]
+1. 메시지는 하나로. 한 영상에 여러 주제를 욕심내지 말 것
+2. 첫 3초에 후킹하고, 끝까지 볼 이유(오픈루프·페이오프)를 반드시 남길 것
+3. 멘트는 실제 사람이 말하는 구어체로, 군더더기 없이 작성할 것
+4. 추상적인 표현 대신 구체적인 숫자·사례·결과를 쓸 것
+5. 자막은 핵심·후킹 문장 위주로 화면에 박고, 컷 전환과 타이밍을 맞출 것
+6. 영상 목표(${goalStr})로 자연스럽게 이어지는 CTA를 마지막에 배치할 것`;
+
+  const formatBlock =
+`[출력 형식]
+- 모든 결과는 글(텍스트)로만 작성하세요. 이미지·그림은 그리지 말고, 화면을 글로 설명하세요.`;
+
+  let promptText;
+  if(mode === 'ai'){
+    promptText =
+`당신은 숏폼 대본 작가 겸 콘텐츠 디렉터입니다.
+아래 기획 정보를 바탕으로, 완주율 높은 '숏폼 대본'을 자동으로 완성하세요. 아래 [자동 적용할 제작 기준]을 빠짐없이 스스로 적용하세요.
+
+${planBlock}
+
+[자동 적용할 제작 기준] (전부 반영할 것)
+${scriptCriteriaCatalog()}
+
+${outputSpec}
+
+${principles}
+
+${formatBlock}`;
+  } else {
+    const checkedItems = [];
+    scriptData.forEach(c=>c.items.forEach(i=>{ if(i.checked) checkedItems.push(i.p); }));
+    const checkedStr = checkedItems.length
+      ? checkedItems.map((t,i)=>`  ${i+1}. ${t}`).join('\n')
+      : '(직접 선택 안 함 — 아래 기본 베스트프랙티스를 모두 적용)\n'+scriptCriteriaCatalog();
+    promptText =
+`당신은 숏폼 대본 작가 겸 콘텐츠 디렉터입니다.
+아래 기획 정보와 구조에 맞춰, 바로 촬영·녹음할 수 있는 '숏폼 대본'을 작성하세요.
+
+${planBlock}
+
+[반드시 충족할 제작 체크리스트]
+${checkedStr}
+
+${outputSpec}
+
+${principles}
+
+${formatBlock}`;
+  }
+
+  document.getElementById('script-result-dot').style.background = 'var(--green)';
+  const gt = document.getElementById('script-gen-text');
+  gt.textContent = '생성 완료!';
+  setTimeout(()=>{ gt.textContent = '📝 대본 프롬프트 생성'; }, 1000);
+  renderPromptResult(promptText, 'script-result-body');
+}
+
+function toggleScriptCard(){
+  const card = document.getElementById('script-input-body').closest('.ai-input-card');
+  card.classList.toggle('collapsed');
+  document.getElementById('script-chevron').classList.toggle('open', !card.classList.contains('collapsed'));
+}
+
+// ======= 후킹 → 대본 정보 이어가기 =======
+let carryOver = null;
+function carryToScript(){
+  carryOver = {
+    goals: getSelectedPills('goal-group'),
+    topic: document.getElementById('topic-input').value.trim(),
+    reference: document.getElementById('reference-input').value.trim(),
+  };
+  selectApp('script');
+}
+function applyCarryOver(){
+  if(!carryOver) return;
+  document.querySelectorAll('#script-goal-group .pill').forEach(p=>{
+    p.classList.toggle('selected', carryOver.goals.includes(p.textContent.trim()));
+  });
+  if(carryOver.topic){
+    const hookField = document.getElementById('script-hook-input');
+    if(!hookField.value) hookField.value = carryOver.topic;
+  }
+  if(carryOver.reference){
+    document.getElementById('script-reference-input').value = carryOver.reference;
+  }
+  const note = document.getElementById('carry-note');
+  note.style.display = 'block';
+  note.textContent = '⚡ 3초 후킹에서 정보를 가져왔어요. 목표·첫 문장·레퍼런스가 자동 입력됐습니다. AI가 만든 후킹 결과가 있으면 \'3초 후킹 결과 입력\'란에 붙여넣고, 주제·메시지를 채운 뒤 생성하세요.';
+  carryOver = null;
+}
+
+/* =========================================================
+   진입 흐름: 앱 선택(후킹/대본) → 모드 선택(직접/AI) → 작업 화면
+   ========================================================= */
+const APP_KEY = '3sec-app';
+const HOOK_MODE_KEY = '3sec-hook-mode';
+const SCRIPT_MODE_KEY = '3sec-script-mode';
+let app = null, mode = null;
+
+function modeKey(){ return app === 'script' ? SCRIPT_MODE_KEY : HOOK_MODE_KEY; }
+function hideHeaderButtons(){ ['reset-btn','global-stat','mode-change-btn','home-btn'].forEach(id=>{ document.getElementById(id).style.display = 'none'; }); }
+
+function showAppSelect(){
+  app = null; mode = null;
+  try { localStorage.removeItem(APP_KEY); } catch(e) {}
+  document.getElementById('mode-select').classList.remove('open');
+  document.getElementById('hook-layout').classList.remove('active');
+  document.getElementById('script-layout').classList.remove('active');
+  document.getElementById('app-select').classList.add('open');
+  hideHeaderButtons();
+}
+
+function selectApp(a){
+  app = a;
+  try { localStorage.setItem(APP_KEY, a); } catch(e) {}
+  showModeSelect();
+}
+
+function showModeSelect(){
+  mode = null;
+  document.getElementById('app-select').classList.remove('open');
+  document.getElementById('hook-layout').classList.remove('active');
+  document.getElementById('script-layout').classList.remove('active');
+  document.getElementById('mode-select').classList.add('open');
+  if(app === 'script'){
+    document.getElementById('ms-title').textContent = '숏폼 대본, 어떻게 만들까요?';
+    document.getElementById('ms-sub').textContent = '대본 작성 방식을 선택하세요.';
+    document.getElementById('mc-manual-title').textContent = '대본 체크리스트 직접 선택';
+    document.getElementById('mc-manual-desc').textContent = '구조를 고르고 제작 체크리스트를 직접 선택해 대본 프롬프트를 만듭니다.';
+    document.getElementById('mc-ai-title').textContent = 'AI 자동 대본 생성';
+    document.getElementById('mc-ai-desc').textContent = '정보만 입력하면 AI가 모든 제작 기준을 적용해 대본을 자동으로 완성합니다.';
+  } else {
+    document.getElementById('ms-title').textContent = '3초 후킹, 어떻게 시작할까요?';
+    document.getElementById('ms-sub').textContent = '후킹 전략을 만드는 방식을 선택하세요.';
+    document.getElementById('mc-manual-title').textContent = '후킹 체크리스트 직접 선택';
+    document.getElementById('mc-manual-desc').textContent = '체크리스트에서 원하는 후킹 요소를 직접 골라 프롬프트를 만듭니다.';
+    document.getElementById('mc-ai-title').textContent = '후킹 체크리스트 AI 제안';
+    document.getElementById('mc-ai-desc').textContent = '정보만 입력하면 AI가 어울리는 후킹 요소를 추천하고, 고르면 최종 결과를 만들어줍니다.';
+  }
+  hideHeaderButtons();
+}
+
+function applyMode(){
+  document.getElementById('app-select').classList.remove('open');
+  document.getElementById('mode-select').classList.remove('open');
+  const hook = document.getElementById('hook-layout');
+  const scriptL = document.getElementById('script-layout');
+  hook.classList.remove('active','ai-mode');
+  scriptL.classList.remove('active','ai-mode');
+  const layout = app === 'script' ? scriptL : hook;
+  layout.classList.add('active');
+  layout.classList.toggle('ai-mode', mode === 'ai');
+
+  document.getElementById('mode-change-btn').style.display = '';
+  document.getElementById('home-btn').style.display = '';
+  const manual = mode === 'manual';
+  document.getElementById('reset-btn').style.display = manual ? '' : 'none';
+  document.getElementById('global-stat').style.display = (manual && app === 'hook') ? '' : 'none';
+
+  if(app === 'script'){ renderScript(); applyCarryOver(); }
+  else { render(); }
+}
+
+function selectMode(m){
+  mode = m;
+  try { localStorage.setItem(modeKey(), m); } catch(e) {}
+  applyMode();
+}
+function changeMode(){
+  try { localStorage.removeItem(modeKey()); } catch(e) {}
+  showModeSelect();
+}
+
+loadState();
+loadScriptState();
+let savedApp = null;
+try { savedApp = localStorage.getItem(APP_KEY); } catch(e) {}
+if(savedApp === 'hook' || savedApp === 'script'){
+  app = savedApp;
+  let sm = null;
+  try { sm = localStorage.getItem(modeKey()); } catch(e) {}
+  if(sm === 'manual' || sm === 'ai'){ mode = sm; applyMode(); }
+  else { showModeSelect(); }
+} else {
+  showAppSelect();
+}
+</script>
+</body>
+</html>
