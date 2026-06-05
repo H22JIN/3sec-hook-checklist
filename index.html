@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3초 후킹 프롬프트 생성기</title>
+<title>숏폼 필수 체크리스트</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236c63ff'/%3E%3Cpath fill='%23FFD700' d='M17.5 3L9 17h5.5L11 29l12-16h-6l2.5-10z'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236c63ff'/%3E%3Cpath fill='%23FFD700' d='M17.5 3L9 17h5.5L11 29l12-16h-6l2.5-10z'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -42,7 +44,8 @@
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
     backdrop-filter: blur(12px);
   }
-  .header-left { display: flex; align-items: center; gap: 14px; }
+  .header-left { display: flex; align-items: center; gap: 14px; cursor: pointer; user-select: none; transition: opacity 0.15s; }
+  .header-left:hover { opacity: 0.82; }
   .header-logo { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
   .header-title { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; white-space: nowrap; }
   .header-subtitle { font-size: 12px; color: var(--text3); margin-top: 1px; }
@@ -302,11 +305,11 @@
 <body>
 
 <header class="app-header">
-  <div class="header-left">
+  <div class="header-left" onclick="goHome()" role="button" tabindex="0" aria-label="처음 화면으로" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
     <div class="header-logo">⚡</div>
     <div>
-      <div class="header-title">3초 후킹 체크리스트</div>
-      <div class="header-subtitle">MECE 분류 · AI 프롬프트 자동 생성</div>
+      <div class="header-title">숏폼 필수 체크리스트</div>
+      <div class="header-subtitle">AI 프롬프트 자동 생성</div>
     </div>
   </div>
   <div class="header-stats">
@@ -325,7 +328,7 @@
     <div class="ms-cards">
       <button class="mode-card" onclick="selectApp('hook')">
         <div class="mode-card-icon">⚡</div>
-        <div class="mode-card-title">3초 후킹 체크리스트</div>
+        <div class="mode-card-title">숏폼 필수 체크리스트</div>
         <div class="mode-card-desc">영상 초반 3초, 시청자를 멈추게 만드는 후킹 전략을 설계합니다.</div>
       </button>
       <button class="mode-card" onclick="selectApp('script')">
@@ -1392,7 +1395,7 @@ let app = null, mode = null;
 function modeKey(){ return app === 'script' ? SCRIPT_MODE_KEY : HOOK_MODE_KEY; }
 function hideHeaderButtons(){ ['reset-btn','global-stat','mode-change-btn','home-btn'].forEach(id=>{ document.getElementById(id).style.display = 'none'; }); }
 
-function showAppSelect(){
+function goHome(){
   app = null; mode = null;
   try { localStorage.removeItem(APP_KEY); } catch(e) {}
   document.getElementById('mode-select').classList.remove('open');
@@ -1401,6 +1404,8 @@ function showAppSelect(){
   document.getElementById('app-select').classList.add('open');
   hideHeaderButtons();
 }
+
+function showAppSelect(){ goHome(); }
 
 function selectApp(a){
   app = a;
