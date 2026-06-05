@@ -80,8 +80,9 @@
   /* App / Mode select screens */
   #mode-select, #app-select { display: none; max-width: 880px; margin: 0 auto; padding: 56px 24px 80px; }
   #mode-select.open, #app-select.open { display: block; }
-  .ms-back { background: none; border: none; color: var(--text2); font-size: 13px; cursor: pointer; margin-bottom: 18px; padding: 4px 0; font-family: inherit; }
-  .ms-back:hover { color: var(--text); }
+  .nav-back { background: none; border: none; color: var(--text2); font-size: 13px; cursor: pointer; padding: 4px 8px; font-family: inherit; white-space: nowrap; flex-shrink: 0; }
+  .nav-back:hover { color: var(--text); }
+  .header-left-wrap { display: flex; align-items: center; gap: 6px; min-width: 0; }
   .ms-title { font-size: 26px; font-weight: 700; text-align: center; letter-spacing: -0.5px; color: var(--text); }
   .ms-sub { font-size: 15px; color: var(--text2); text-align: center; margin-top: 10px; margin-bottom: 36px; }
   .ms-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
@@ -305,18 +306,20 @@
 <body>
 
 <header class="app-header">
-  <div class="header-left" onclick="goHome()" role="button" tabindex="0" aria-label="처음 화면으로" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
-    <div class="header-logo">⚡</div>
-    <div>
-      <div class="header-title">숏폼 필수 체크리스트</div>
-      <div class="header-subtitle">AI 프롬프트 자동 생성</div>
+  <div class="header-left-wrap">
+    <button class="nav-back" id="nav-back-btn" onclick="goBack()" style="display:none">← 이전화면으로</button>
+    <div class="header-left" onclick="goHome()" role="button" tabindex="0" aria-label="처음 화면으로" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
+      <div class="header-logo">⚡</div>
+      <div>
+        <div class="header-title">숏폼 필수 체크리스트</div>
+        <div class="header-subtitle">AI 프롬프트 자동 생성</div>
+      </div>
     </div>
   </div>
   <div class="header-stats">
     <span class="stat-pill" id="global-stat">0 / 0</span>
     <button class="btn btn-sm" id="reset-btn" onclick="resetAll()">초기화</button>
     <button class="btn btn-sm" id="mode-change-btn" onclick="changeMode()" style="display:none">↔ 모드 변경</button>
-    <button class="btn btn-sm" id="home-btn" onclick="showAppSelect()" style="display:none">🏠 처음으로</button>
   </div>
 </header>
 
@@ -343,7 +346,6 @@
 <!-- 2단계: 모드 선택 화면 (앱에 따라 문구 동적 변경) -->
 <div id="mode-select">
   <div class="ms-inner">
-    <button class="ms-back" onclick="showAppSelect()">← 처음 화면으로</button>
     <h1 class="ms-title" id="ms-title">어떻게 시작할까요?</h1>
     <p class="ms-sub" id="ms-sub">방식을 선택하세요.</p>
     <div class="ms-cards">
@@ -1393,16 +1395,38 @@ const SCRIPT_MODE_KEY = '3sec-script-mode';
 let app = null, mode = null;
 
 function modeKey(){ return app === 'script' ? SCRIPT_MODE_KEY : HOOK_MODE_KEY; }
-function hideHeaderButtons(){ ['reset-btn','global-stat','mode-change-btn','home-btn'].forEach(id=>{ document.getElementById(id).style.display = 'none'; }); }
+function hideHeaderButtons(){ ['reset-btn','global-stat','mode-change-btn'].forEach(id=>{ document.getElementById(id).style.display = 'none'; }); }
+
+function getCurrentScreen(){
+  if(document.getElementById('app-select').classList.contains('open')) return 'app-select';
+  if(document.getElementById('mode-select').classList.contains('open')) return 'mode-select';
+  if(document.getElementById('hook-layout').classList.contains('active') || document.getElementById('script-layout').classList.contains('active')) return 'work';
+  return 'app-select';
+}
+
+function updateNavBack(){
+  document.getElementById('nav-back-btn').style.display = getCurrentScreen() === 'app-select' ? 'none' : '';
+}
+
+function goBack(){
+  const screen = getCurrentScreen();
+  if(screen === 'work'){
+    try { localStorage.removeItem(modeKey()); } catch(e) {}
+    showModeSelect();
+  } else if(screen === 'mode-select'){
+    goHome();
+  }
+}
 
 function goHome(){
   app = null; mode = null;
-  try { localStorage.removeItem(APP_KEY); } catch(e) {}
+  try { localStorage.removeItem(APP_KEY); localStorage.removeItem(HOOK_MODE_KEY); localStorage.removeItem(SCRIPT_MODE_KEY); } catch(e) {}
   document.getElementById('mode-select').classList.remove('open');
   document.getElementById('hook-layout').classList.remove('active');
   document.getElementById('script-layout').classList.remove('active');
   document.getElementById('app-select').classList.add('open');
   hideHeaderButtons();
+  updateNavBack();
 }
 
 function showAppSelect(){ goHome(); }
@@ -1435,6 +1459,7 @@ function showModeSelect(){
     document.getElementById('mc-ai-desc').textContent = '정보만 입력하면 AI가 어울리는 후킹 요소를 추천하고, 고르면 최종 결과를 만들어줍니다.';
   }
   hideHeaderButtons();
+  updateNavBack();
 }
 
 function applyMode(){
@@ -1449,13 +1474,13 @@ function applyMode(){
   layout.classList.toggle('ai-mode', mode === 'ai');
 
   document.getElementById('mode-change-btn').style.display = '';
-  document.getElementById('home-btn').style.display = '';
   const manual = mode === 'manual';
   document.getElementById('reset-btn').style.display = manual ? '' : 'none';
   document.getElementById('global-stat').style.display = (manual && app === 'hook') ? '' : 'none';
 
   if(app === 'script'){ renderScript(); applyCarryOver(); }
   else { render(); }
+  updateNavBack();
 }
 
 function selectMode(m){
