@@ -6,8 +6,71 @@
 <title>숏폼 필수 체크리스트</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236c63ff'/%3E%3Cpath fill='%23FFD700' d='M17.5 3L9 17h5.5L11 29l12-16h-6l2.5-10z'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236c63ff'/%3E%3Cpath fill='%23FFD700' d='M17.5 3L9 17h5.5L11 29l12-16h-6l2.5-10z'/%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Pretendard-Thin.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Pretendard-ExtraLight.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Pretendard-Light.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Pretendard-Regular.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Pretendard-Medium.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Pretendard-SemiBold.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Pretendard-Bold.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Pretendard-ExtraBold.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Pretendard-Black.otf') format('opentype');
+  }
+
   :root, [data-theme="light"] {
     --bg: #f8f8f6;
     --surface: #efefec;
@@ -40,9 +103,9 @@
     --header-bg: rgba(248,248,246,0.82);
     --orb-opacity: 0.55;
     --card-glow: rgba(255,120,120,0.18);
-    --font-serif: 'Instrument Serif', 'Noto Serif KR', Georgia, serif;
-    --font-sans: 'Inter', 'Noto Sans KR', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-serif: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     --check-bg: rgba(22,163,74,0.08);
     --modal-overlay: rgba(0,0,0,0.35);
     --input-bg: rgba(255,255,255,0.7);
@@ -112,8 +175,8 @@
     box-shadow: var(--shadow-sm);
   }
   .header-title {
-    font-family: var(--font-serif);
-    font-size: 18px; font-weight: 400;
+    font-family: var(--font-sans);
+    font-size: 18px; font-weight: 700;
     color: var(--text);
     letter-spacing: -0.02em;
     white-space: nowrap;
@@ -184,8 +247,8 @@
   }
   .nav-back:hover { color: var(--text); border-color: var(--accent-border); }
   .ms-title {
-    font-family: var(--font-serif);
-    font-size: 42px; font-weight: 400;
+    font-family: var(--font-sans);
+    font-size: 42px; font-weight: 700;
     text-align: center; letter-spacing: -0.03em;
     color: var(--text); line-height: 1.1;
   }
@@ -222,8 +285,8 @@
   .mode-card:hover::before { opacity: calc(var(--orb-opacity) + 0.15); }
   .mode-card-icon { font-size: 32px; margin-bottom: 20px; position: relative; }
   .mode-card-title {
-    font-family: var(--font-serif);
-    font-size: 22px; font-weight: 400;
+    font-family: var(--font-sans);
+    font-size: 22px; font-weight: 700;
     margin-bottom: 8px; letter-spacing: -0.02em;
     position: relative;
   }
@@ -237,9 +300,6 @@
   .layout.ai-mode #script-checked-field { display: none; }
 
   /* 대본: 구조 골격 가이드 + 캐리오버 안내 */
-  .structure-guide { display: none; margin-top: 10px; font-size: 13px; line-height: 1.65; color: var(--text2); background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 14px 16px; }
-  .structure-guide.show { display: block; }
-  .structure-guide b { color: var(--text); font-family: var(--font-serif); font-weight: 400; }
   .carry-note { font-size: 12.5px; color: var(--text2); background: var(--green-dim); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 14px; line-height: 1.6; }
 
   /* Left panel */
@@ -281,8 +341,8 @@
   }
   [data-theme="dark"] .ai-badge { background: var(--accent); color: #fff; }
   .ai-input-title {
-    font-family: var(--font-serif);
-    font-size: 18px; font-weight: 400;
+    font-family: var(--font-sans);
+    font-size: 18px; font-weight: 700;
     color: var(--text); flex: 1; letter-spacing: -0.02em;
   }
   .ai-chevron { font-size: 11px; color: var(--text3); transition: transform 0.2s; }
@@ -292,8 +352,8 @@
   .ai-input-body { position: relative; padding: 20px 22px 22px; }
 
   .field-label {
-    font-family: var(--font-serif);
-    font-size: 15px; font-weight: 400;
+    font-family: var(--font-sans);
+    font-size: 15px; font-weight: 600;
     color: var(--text); letter-spacing: -0.01em;
     margin-bottom: 10px;
   }
@@ -367,8 +427,8 @@
   }
   .result-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
   .result-title {
-    font-family: var(--font-serif);
-    font-size: 18px; font-weight: 400;
+    font-family: var(--font-sans);
+    font-size: 18px; font-weight: 700;
     color: var(--text); flex: 1; letter-spacing: -0.02em;
   }
 
@@ -424,8 +484,8 @@
   }
   .cat-name {
     flex: 1; min-width: 0;
-    font-family: var(--font-serif);
-    font-size: 17px; font-weight: 400;
+    font-family: var(--font-sans);
+    font-size: 17px; font-weight: 700;
     color: var(--text); letter-spacing: -0.02em;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
@@ -452,7 +512,7 @@
 
   /* ⋯ dropdown menu */
   .ctx-menu { position: absolute; display: none; z-index: 250; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 4px; min-width: 120px; box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
-  .ctx-item { display: block; width: 100%; text-align: left; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; padding: 8px 12px; border: none; background: transparent; color: var(--text); border-radius: 6px; cursor: pointer; }
+  .ctx-item { display: block; width: 100%; text-align: left; font-family: var(--font-sans); font-size: 13px; padding: 8px 12px; border: none; background: transparent; color: var(--text); border-radius: 6px; cursor: pointer; }
   .ctx-item:hover { background: var(--surface3); }
   .ctx-item.danger { color: var(--red); }
 
@@ -499,7 +559,7 @@
     box-shadow: var(--shadow);
     backdrop-filter: blur(20px);
   }
-  .modal-title { font-family: var(--font-serif); font-size: 24px; font-weight: 400; margin-bottom: 20px; color: var(--text); letter-spacing: -0.02em; }
+  .modal-title { font-family: var(--font-sans); font-size: 24px; font-weight: 700; margin-bottom: 20px; color: var(--text); letter-spacing: -0.02em; }
   .modal-field { margin-bottom: 16px; }
   .modal-label { font-size: 12px; color: var(--text3); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; }
   .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
@@ -507,7 +567,7 @@
   .emoji-btn { width: 40px; height: 40px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; font-size: 18px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
   .emoji-btn:hover { background: var(--surface3); border-color: var(--border2); transform: scale(1.05); }
   .emoji-btn.selected { border-color: var(--accent-border); background: var(--accent-dim); box-shadow: var(--shadow-sm); }
-  .result-section-label { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-serif); font-size: 16px; font-weight: 400; color: var(--text); margin-bottom: 12px; letter-spacing: -0.02em; }
+  .result-section-label { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-sans); font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 12px; letter-spacing: -0.02em; }
   .tag-options { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
   .tag-option { padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; border: 1px solid transparent; cursor: pointer; transition: all 0.1s; }
   .tag-option[data-tag="none"] { background: var(--surface2); color: var(--text2); border-color: var(--border2); }
@@ -528,7 +588,7 @@
     max-width: calc(100vw - 32px);
     box-shadow: var(--shadow);
   }
-  .confirm-title { font-family: var(--font-serif); font-size: 20px; font-weight: 400; margin-bottom: 10px; color: var(--text); }
+  .confirm-title { font-family: var(--font-sans); font-size: 20px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
   .confirm-desc { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.5; }
   .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
@@ -551,7 +611,7 @@
   }
 
   /* Notes */
-  .ai-note, .structure-guide, .carry-note {
+  .ai-note, .carry-note {
     border-radius: var(--radius-sm) !important;
     backdrop-filter: blur(8px);
   }
@@ -568,6 +628,99 @@
     backdrop-filter: blur(16px);
     box-shadow: var(--shadow) !important;
   }
+
+  /* 영상 길이 슬라이더 */
+  .length-slider-wrap { margin-top: 4px; }
+  .length-slider-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .length-value-wrap { position: relative; }
+  .length-value {
+    font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+    color: var(--accent); letter-spacing: -0.02em;
+    cursor: text; border-radius: 8px; padding: 2px 8px; margin: -2px -8px;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .length-value:hover {
+    background: var(--accent-dim);
+    box-shadow: 0 0 0 1px var(--accent-border);
+  }
+  .length-value .length-unit { font-size: 13px; font-weight: 500; color: var(--text3); margin-left: 2px; }
+  .length-input {
+    font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+    color: var(--accent); letter-spacing: -0.02em;
+    width: 76px; padding: 2px 8px; margin: -2px -8px;
+    background: var(--input-bg); border: 1px solid var(--accent-border);
+    border-radius: 8px; outline: none;
+    box-shadow: 0 0 0 3px var(--accent-dim);
+    -moz-appearance: textfield;
+  }
+  .length-input::-webkit-outer-spin-button,
+  .length-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .length-hint-text { font-size: 12px; color: var(--text3); max-width: 180px; text-align: right; line-height: 1.4; }
+  .length-slider-inner { --thumb-r: 11px; position: relative; }
+  .length-slider-inner::after {
+    content: '';
+    position: absolute;
+    left: calc(var(--thumb-r) + (2 / 3) * (100% - var(--thumb-r) * 2));
+    top: 13px;
+    width: 1px; height: 10px;
+    background: var(--border2);
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+  input[type=range].length-slider {
+    -webkit-appearance: none; appearance: none;
+    display: block; width: 100%; height: 32px;
+    background: transparent; outline: none; cursor: pointer; border: none;
+  }
+  input[type=range].length-slider::-webkit-slider-runnable-track {
+    height: 6px; border-radius: 99px;
+    background: var(--surface2); border: 1px solid var(--border);
+  }
+  input[type=range].length-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--text); border: 2px solid var(--surface3);
+    box-shadow: var(--shadow-sm); cursor: pointer; transition: transform 0.15s;
+    margin-top: -8px;
+  }
+  [data-theme="dark"] input[type=range].length-slider::-webkit-slider-thumb { background: var(--accent); }
+  input[type=range].length-slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
+  input[type=range].length-slider::-moz-range-track {
+    height: 6px; border-radius: 99px;
+    background: var(--surface2); border: 1px solid var(--border);
+  }
+  input[type=range].length-slider::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--text); border: 2px solid var(--surface3);
+    box-shadow: var(--shadow-sm); cursor: pointer; border: none;
+  }
+  .length-ticks { position: relative; height: 18px; margin-top: 2px; }
+  .length-tick {
+    position: absolute; top: 0;
+    left: calc(var(--thumb-r) + var(--pos) * (100% - var(--thumb-r) * 2));
+    transform: translateX(-50%);
+    font-size: 10px; color: var(--text3); font-family: var(--font-mono);
+    white-space: nowrap; cursor: text;
+    padding: 2px 4px; border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .length-tick-recommended { color: var(--accent); font-weight: 600; }
+  .length-tick:hover { color: var(--accent); background: var(--accent-dim); }
+
+  /* AI 서비스 바로가기 */
+  .ai-service-btns {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    margin-top: 10px;
+  }
+  .ai-service-btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 8px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border2); background: var(--surface2);
+    color: var(--text); font-family: var(--font-sans); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; box-shadow: var(--shadow-sm);
+  }
+  .ai-service-btn:hover { background: var(--surface3); border-color: var(--accent-border); transform: translateY(-1px); }
+  @media (max-width: 480px) { .ai-service-btns { grid-template-columns: 1fr; } }
 
   @media (max-width: 600px) {
     .app-header { padding: 14px 16px; }
@@ -656,12 +809,11 @@
         <!-- 영상 템플릿 -->
         <div class="field-label">영상 템플릿 <span class="field-hint">(성격 1개)</span></div>
         <div class="pill-group" id="tpl-group" data-single="1">
-          <span class="pill" onclick="togglePill(this)">강의·정보 홍보형</span>
+          <span class="pill" onclick="togglePill(this)">스토리텔링형</span>
           <span class="pill" onclick="togglePill(this)">제품 리뷰형</span>
-          <span class="pill" onclick="togglePill(this)">일상 썰풀이형</span>
-          <span class="pill" onclick="togglePill(this)">꿀팁·정보형</span>
+          <span class="pill" onclick="togglePill(this)">시연형</span>
+          <span class="pill" onclick="togglePill(this)">정보·꿀팁형</span>
           <span class="pill" onclick="togglePill(this)">챌린지·밈형</span>
-          <span class="pill" onclick="togglePill(this)">브이로그형</span>
         </div>
 
         <!-- 주제 입력 -->
@@ -696,13 +848,13 @@
         <!-- 신뢰·증거 요소 -->
         <div class="field-label" style="margin-top:16px;">신뢰·증거 요소 <span class="field-hint">(넣으면 퀄리티 급상승)</span></div>
         <div class="pill-group" id="trust-group">
-          <span class="pill" onclick="togglePill(this)">직접 운영 계정</span>
-          <span class="pill" onclick="togglePill(this)">조회수 사례</span>
+          <span class="pill" onclick="togglePill(this)">해외, 국내 최근 인기</span>
           <span class="pill" onclick="togglePill(this)">고객 후기</span>
-          <span class="pill" onclick="togglePill(this)">실험 결과</span>
+          <span class="pill" onclick="togglePill(this)">권위(전문가 학위 등)</span>
+          <span class="pill" onclick="togglePill(this)">실험, 연구 결과</span>
           <span class="pill" onclick="togglePill(this)">없음</span>
         </div>
-        <input type="text" id="trust-detail" style="margin-top:8px;" placeholder="예) 1000개 넘는 숏폼 분석함 / 조회수 100배 차이 / 이 방법으로 8kg 감량">
+        <input type="text" id="trust-detail" style="margin-top:8px;" placeholder="예) 1000개 넘는 숏폼 분석함 / 해외 TikTok 500만 조회 / 정육점 20년 경력">
 
         <!-- 레퍼런스 영상 분석 -->
         <div class="field-label" style="margin-top:16px;">
@@ -768,8 +920,35 @@
         <!-- 후킹에서 넘어온 정보 안내 -->
         <div class="carry-note" id="carry-note" style="display:none"></div>
 
+        <!-- 영상 템플릿 -->
+        <div class="field-label">영상 템플릿 <span class="field-hint">(1개 선택 — 대본 엔진)</span></div>
+        <div class="pill-group" id="script-tpl-group" data-single="1">
+          <span class="pill" onclick="togglePill(this)">스토리텔링형</span>
+          <span class="pill" onclick="togglePill(this)">제품 리뷰형</span>
+          <span class="pill" onclick="togglePill(this)">시연형</span>
+          <span class="pill" onclick="togglePill(this)">정보·꿀팁형</span>
+          <span class="pill" onclick="togglePill(this)">챌린지·밈형</span>
+        </div>
+
+        <!-- 영상 길이 -->
+        <div class="field-label" style="margin-top:16px;">영상 길이</div>
+        <div class="length-slider-wrap">
+          <div class="length-slider-header">
+            <div class="length-value-wrap">
+              <span class="length-value" id="length-display" onclick="startLengthEdit()" title="클릭하여 직접 입력">40<span class="length-unit">초</span></span>
+              <input type="number" class="length-input" id="length-input" min="5" max="180" style="display:none"
+                onblur="commitLengthEdit()" onkeydown="lengthInputKeydown(event)">
+            </div>
+            <div class="length-hint-text" id="length-hint">기본 분량 · 11~14문장</div>
+          </div>
+          <div class="length-slider-inner">
+            <input type="range" class="length-slider" id="video-length" min="0" max="1000" value="424" step="1" oninput="updateLengthDisplay()">
+            <div class="length-ticks" id="length-ticks"></div>
+          </div>
+        </div>
+
         <!-- 영상 목표 -->
-        <div class="field-label">영상 목표 <span class="field-hint">(복수 선택)</span></div>
+        <div class="field-label" style="margin-top:16px;">영상 목표 <span class="field-hint">(복수 선택)</span></div>
         <div class="pill-group" id="script-goal-group">
           <span class="pill" onclick="togglePill(this)">팔로우</span>
           <span class="pill" onclick="togglePill(this)">좋아요</span>
@@ -780,10 +959,16 @@
           <span class="pill" onclick="togglePill(this)">브랜딩</span>
         </div>
 
-        <!-- 영상 구조 -->
-        <div class="field-label" style="margin-top:16px;">영상 구조 <span class="field-hint">(1개 선택 — 대본 골격)</span></div>
-        <div class="pill-group" id="structure-group" data-single="1"></div>
-        <div class="structure-guide" id="structure-guide"></div>
+        <!-- 신뢰·증거 요소 -->
+        <div class="field-label" style="margin-top:16px;">신뢰·증거 요소 <span class="field-hint">(넣으면 퀄리티 급상승)</span></div>
+        <div class="pill-group" id="script-trust-group">
+          <span class="pill" onclick="togglePill(this)">해외, 국내 최근 인기</span>
+          <span class="pill" onclick="togglePill(this)">고객 후기</span>
+          <span class="pill" onclick="togglePill(this)">권위(전문가 학위 등)</span>
+          <span class="pill" onclick="togglePill(this)">실험, 연구 결과</span>
+          <span class="pill" onclick="togglePill(this)">없음</span>
+        </div>
+        <input type="text" id="script-trust-detail" style="margin-top:8px;" placeholder="예) 해외 TikTok 화제 / 국내 인스타 reels 인기 / 논문·실험 수치">
 
         <!-- 영상 주제 / 핵심 메시지 / 정보 -->
         <div class="field-label" style="margin-top:16px;">영상 주제 / 핵심 메시지 / 영상 관련 정보 <span class="field-hint">(자유 입력)</span></div>
@@ -810,7 +995,7 @@
         </div>
 
         <!-- AI 자동 생성 모드 안내 -->
-        <div class="ai-note">🤖 AI 자동 생성 모드예요. 루프·자막·편집·오디오 등 모든 제작 베스트프랙티스를 AI가 알아서 적용해 대본을 완성합니다. 구조를 안 고르면 가장 잘 맞는 구조도 추천해줘요.</div>
+        <div class="ai-note">🤖 AI 자동 생성 모드예요. 템플릿·목표·후킹·길이를 확인한 뒤, AI가 단계별 질문을 던져 답을 받고 대본을 조립합니다. 사실은 지어내지 않고 사용자 답변만 재료로 씁니다.</div>
 
         <button class="generate-btn" onclick="generateScript()">
           <span id="script-gen-text">📝 대본 프롬프트 생성</span>
@@ -1110,10 +1295,12 @@ function generateHooks() {
   }
 
   const template = getSelectedPills('tpl-group')[0] || '(선택 안 함 — 주제에 맞게 알아서 판단)';
+  const tplObj = getVideoTemplate(template);
+  const templateHint = tplObj
+    ? `${template} (엔진: ${tplObj.engine}${tplObj.composition ? ' / 구성: ' + tplObj.composition : ''} / 후킹 방향: ${tplObj.hookGuide})`
+    : template;
   const goals = getSelectedPills('goal-group');
   const emotions = getSelectedPills('emotion-group');
-  const trust = getSelectedPills('trust-group');
-  const trustDetail = document.getElementById('trust-detail').value.trim();
 
   const checkedItems = [];
   data.forEach(c=>c.subs.forEach(s=>s.items.forEach(i=>{ if(i.checked) checkedItems.push(i.p || i.t); })));
@@ -1125,23 +1312,14 @@ function generateHooks() {
   const goalStr = goals.length ? goals.join(', ') : '(미선택 — 주제에 맞게 판단)';
   const emotionStr = emotions.length ? emotions.join(', ') : '(미선택 — 주제에 맞게 판단)';
 
-  const trustList = trust.filter(t=>t!=='없음');
-  let trustStr;
-  if(trust.includes('없음') && trustList.length===0 && !trustDetail){
-    trustStr = '(없음 — 증거 없이도 설득되는 후킹으로 구성)';
-  } else {
-    const parts = [];
-    if(trustList.length) parts.push(trustList.join(', '));
-    if(trustDetail) parts.push(`구체적 근거: "${trustDetail}"`);
-    trustStr = parts.length ? parts.join(' / ') : '(미입력)';
-  }
+  const trustStr = buildTrustStr('trust-group', 'trust-detail', '(없음 — 증거 없이도 설득되는 후킹으로 구성)');
 
   const refStr = reference || '(입력 안함)';
   const imgMode = document.getElementById('img-mode').checked;
 
   const baseInfo =
 `[기본 정보]
-- 영상 템플릿(성격): ${template}
+- 영상 템플릿(성격): ${templateHint}
 - 영상 주제 / 첫 문장: ${topic}
 - 영상 목표: ${goalStr}
 - 유발하고 싶은 감정(가장 중요): ${emotionStr}
@@ -1260,10 +1438,15 @@ function renderPromptResult(promptText, bodyId) {
       <button class="btn btn-primary" onclick="copyPrompt(event)" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 700; display: flex; justify-content: center; gap: 8px;">
         📋 프롬프트 복사하기
       </button>
+      <div class="ai-service-btns">
+        <button type="button" class="ai-service-btn" onclick="openAIService('chatgpt', event)">ChatGPT</button>
+        <button type="button" class="ai-service-btn" onclick="openAIService('gemini', event)">Gemini</button>
+        <button type="button" class="ai-service-btn" onclick="openAIService('claude', event)">Claude</button>
+      </div>
       ${carryBtn}
     </div>
     <div style="font-size: 13px; color: var(--text3); text-align: center; margin-top: 16px; line-height: 1.6;">
-      위 프롬프트를 복사하여<br>ChatGPT, Claude, Gemini 등에 붙여넣기 하세요.
+      AI 버튼을 누르면 프롬프트가 복사되고 해당 서비스가 열려요.<br>붙여넣기(Cmd+V)만 하면 됩니다.
     </div>
   `;
 }
@@ -1288,6 +1471,31 @@ function copyPrompt(event) {
   } catch (err) {
     alert('복사에 실패했습니다. 텍스트를 직접 드래그해서 복사해주세요.');
   }
+}
+
+const AI_SERVICES = {
+  chatgpt: { url: 'https://chatgpt.com/' },
+  gemini: { url: 'https://gemini.google.com/app' },
+  claude: { url: 'https://claude.ai/new' },
+};
+
+async function openAIService(key, event){
+  const section = event.currentTarget.closest('.result-section');
+  const ta = section?.querySelector('.generated-prompt');
+  if(!ta) return;
+  const text = ta.value;
+  try {
+    if(navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+    else { ta.select(); document.execCommand('copy'); }
+  } catch(e) {
+    ta.select();
+    try { document.execCommand('copy'); } catch(_) {}
+  }
+  window.open(AI_SERVICES[key].url, '_blank', 'noopener,noreferrer');
+  const btn = event.currentTarget;
+  const orig = btn.textContent;
+  btn.textContent = '✅ 복사됨';
+  setTimeout(() => { btn.textContent = orig; }, 1200);
 }
 
 // ======= ADD =======
@@ -1378,6 +1586,29 @@ function getSelectedPills(groupId){
   return [...document.querySelectorAll('#'+groupId+' .pill.selected')].map(p=>p.textContent.trim());
 }
 
+const TRUST_PROMPT_HINTS = {
+  '해외, 국내 최근 인기': '해외·국내에서 난리 났다, 지금 OO에서 인기, 최근 SNS·뉴스에서 화제, 요즘 ○○국에서 핫하다 등 인기·화제성 문구를 자연스럽게 활용 (사실에 맞게)',
+};
+
+function buildTrustStr(groupId, detailId, emptyMsg){
+  const trust = getSelectedPills(groupId);
+  const trustDetail = document.getElementById(detailId)?.value.trim() || '';
+  const trustList = trust.filter(t=>t!=='없음');
+  if(trust.includes('없음') && trustList.length===0 && !trustDetail){
+    return emptyMsg;
+  }
+  const parts = [];
+  if(trustList.length){
+    const items = trustList.map(t => {
+      const hint = TRUST_PROMPT_HINTS[t];
+      return hint ? `${t} → ${hint}` : t;
+    });
+    parts.push(items.join(' / '));
+  }
+  if(trustDetail) parts.push(`구체적 근거: "${trustDetail}"`);
+  return parts.length ? parts.join(' / ') : '(미입력)';
+}
+
 // ======= AI CARD COLLAPSE =======
 function toggleAiCard(){
   const card = document.querySelector('.ai-input-card');
@@ -1441,16 +1672,238 @@ let scriptData = [
   ]},
 ];
 
-const scriptStructures = [
-  {name:'계속 다음이 궁금하게', guide:'0초에 "판돈·약속"을 제시 → 매 구간마다 다음 구간을 미리 예고 → 스케일·긴장을 점점 키움 → 마지막에 큰 보상. 지루한 구간 없이. (미스터비스트식)'},
-  {name:'문제 → 키우기 → 해결', guide:'문제를 제시 → 그냥 두면 어떻게 되는지 고통을 키움 → 해결책 제시. (PAS)'},
-  {name:'전후 비교 먼저 보여주기', guide:'한심한 Before → 부러운 After를 먼저 보여줌 → "어떻게 했는지"를 다리 삼아 방법으로 연결. (BAB)'},
-  {name:'N가지로 정리해주기', guide:'"3가지"처럼 숫자로 약속 → 항목을 빠르게 나열 → 마지막에 보너스 하나. (리스트형)'},
-  {name:'궁금증 던지고 끝에 답 주기', guide:'초반에 떡밥·질문을 던짐 → 답을 일부러 미룸 → 마지막에 회수. (오픈루프형)'},
-  {name:'통념 깨기 (반전 주장)', guide:'"다들 X 하라는데 사실 틀렸다" → 통념을 깸 → 진짜 이유 설명. (역발상형)'},
-  {name:'경험담·이야기 들려주기', guide:'상황 설정 → 갈등·실패 → 반전·해결로 마무리. (스토리텔링형)'},
-  {name:'따라 하기 단계별 설명', guide:'1 → 2 → 3 단계로 군더더기 없이 방법을 알려줌. (튜토리얼형)'},
+const videoTemplates = [
+  {
+    name: '스토리텔링형',
+    engine: '궁금증 → 저점 → 전환 → 교훈',
+    hookGuide: '개인 경험·고백·반전 서사로 호기심을 유발. "왜 이렇게 됐는지" 궁금하게 시작.',
+    composition: '후킹 → 봐야 할 이유 → 본론(궁금증→저점→전환→결과→교훈) → 해소·공감 → CTA',
+    questions: [
+      '① 오프닝 궁금증/고백 — 시청자가 "왜?"라고 묻게 만드는 한 줄은?',
+      '② 배경·발단 — 그 전 상황·배경은?',
+      '③ 가장 힘든 저점 — 문제·위기·고통의 순간은?',
+      '④ 전환점 — 계기·반전·깨달음의 순간은?',
+      '⑤ 결과·깨달음 — 그 후 어떻게 됐나?',
+      '⑥ 남길 교훈 — 시청자에게 전하고 싶은 한 줄은?'
+    ],
+    example: `[후킹] 제가 잘 다니던 회사를 때려치우고 요리를 시작한 이유, 좀 부끄러운데요.
+[봐야 할 이유] 5년 차 직장인이었고 남들 보기엔 멀쩡했거든요.
+[본론-저점] 근데 매일 야근에 배달만 먹다 보니, 건강검진에서 빨간 줄이 잔뜩 떴어요.
+[본론-전환] 살려고 직접 해 먹기 시작했는데, 이게 의외로 너무 재밌더라고요.
+[본론-결과] 1년 만에 몸도 회복되고, 지금은 이게 직업이 됐어요.
+[해소·공감] 바쁘다고 몸 갈아넣는 분들, 저처럼 후회하기 전에 한 끼라도 직접 해보세요.
+[CTA] 건강하게 해 먹는 법 더 올릴게요. 팔로우 해두면 도움 될 거예요.`
+  },
+  {
+    name: '제품 리뷰형',
+    engine: '니즈·문제 → 제품 등장 → 핵심 장점 → 차별·비교 → 추천',
+    hookGuide: '구매 고민·불편을 찌르거나 "이거 쓰고 ○○ 달라졌다" 식의 결과 암시로 시작.',
+    composition: '후킹 → 왜 필요했는지(문제·욕구) → 제품 소개 → 핵심 기능·장점 1~2 → 차별점·비교 → 아쉬운 점(선택, 신뢰↑) → 누구에게 추천 → CTA',
+    questions: [
+      '① 어떤 문제·불편·욕구가 있었나?',
+      '② 리뷰할 제품은? (이름·종류)',
+      '③ 가장 마음에 드는 핵심 장점 1~2개는?',
+      '④ 비슷한 제품·이전 방식과 비교했을 때 차별점은?',
+      '⑤ 아쉬운 점·주의할 점(있다면)?',
+      '⑥ 누구에게 추천하고 싶나?'
+    ],
+    example: `[후킹] 3만 원 이어폰인데, 이 음질은 좀 반칙 아닌가요.
+[봐야 할 이유] 저 노이즈캔슬 15만 원짜리 쓰다가 바꿨어요.
+[본론-문제] 출퇴근길 소음 때문에 집중이 안 됐거든요.
+[본론-장점] 저음이 진짜 탄탄해요. bass-heavy 들을 때 차이가 확 나요.
+[본론-차별] 가격 3만 원대인데, 노캔 성능은 10만 원대랑 비슷했어요.
+[본론-주의] 단, 통화 품질은 평범해요. 전화 많이 하시면 아쉬울 수 있어요.
+[CTA] 가성비 이어폰 더 보고 싶으면 저장해두세요.`
+  },
+  {
+    name: '시연형',
+    engine: '과정 + 단계별 "왜" + 완성 리빌',
+    hookGuide: '완성물·결과를 암시하거나 "이거 하나만 바꾸면" 식의 즉각적 이득으로 시작. (레시피·만드는 법·튜토리얼)',
+    composition: '후킹 → 봐야 할 이유 → 단계별 시연(각 단계 "왜") → 흔한 실수·차별 팁 → 완성 리빌 → 해소·공감 → CTA',
+    questions: [
+      '① 뭘 만들거나 시연하나? (레시피·방법·튜토리얼)',
+      '② 단계 순서 — 어떤 순서로 진행하나?',
+      '③ 각 단계 "왜" — 가장 중요한 팁·이유는?',
+      '④ 흔한 실수 or 차별점 — 남들과 다른 포인트는?',
+      '⑤ 완성 결과 — 한마디로 어떻게 나왔나?'
+    ],
+    example: `[후킹] 똑같은 라면인데, 이거 하나만 바꾸면 분식집 맛 나요.
+[봐야 할 이유] 라면 1000개는 끓여본 사람이 말하는 거예요.
+[본론-단계+왜] 물 끓고 면 넣고요. 스프를 면보다 먼저 넣으면 국물 간이 더 깊게 배요.
+[본론-차별점] 대파, 저는 기름에 한 번 볶아서 넣어요. 솔직히 이거 하고 안 하고 향이 진짜 달라요.
+[해소·공감] 어때요, 재료 안 사도 되죠?
+[CTA] 자취 요리 더 궁금하면 긴 영상도 보러 오세요.`
+  },
+  {
+    name: '정보·꿀팁형',
+    engine: '결론 먼저 → 근거/항목 → 요약',
+    hookGuide: '숫자·실수·비밀 등 구체적 약속으로 "지금 알아야 한다"는 긴박감.',
+    composition: '후킹 → 봐야 할 이유 → 본론(핵심 주장→근거·항목→오해·반론) → 해소·공감 → CTA',
+    questions: [
+      '① 핵심 주장/결론 — 한 줄로 뭐라고 말할 건가?',
+      '② 왜 중요한가? (근거·연구·권위)',
+      '③ 항목/근거 나열 — 몇 가지 포인트?',
+      '④ 오해·반론 — 흔히 믿는 잘못된 정보는?',
+      '⑤ 요약 한 줄 — 기억에 남길 한 마디는?'
+    ],
+    example: `[후킹] 고기 구울 때 다들 하는 실수 3가지, 이거 때문에 질겨지는 거예요.
+[봐야 할 이유] 정육점 사장님한테 직접 들은 거예요.
+[본론-항목] 첫째, 냉장고에서 꺼내자마자 굽기. 실온에 30분은 둬야 속까지 익어요.
+[본론-오해] "소금 미리 뿌리면 질겨진다"는 말, 사실 반대더라고요.
+[해소·공감] 이 세 개만 고쳐도 집 고기가 확 달라져요.
+[CTA] 저장해두고 다음에 구울 때 꼭 보세요.`
+  },
+  {
+    name: '챌린지·밈형',
+    engine: '트렌드 셋업 → 실행/반전 → 펀치',
+    hookGuide: '유행 밈·챌린지를 언급하거나 극단적·과장된 도전으로 시작.',
+    composition: '후킹 → 본론(트렌드→트위스트→실행→펀치) → CTA',
+    questions: [
+      '① 어떤 트렌드/밈인가?',
+      '② 너만의 트위스트 — 남들과 다른 변형은?',
+      '③ 실행 — 실제로 어떻게 했나?',
+      '④ 펀치·반응 포인트 — 반전·결과·리액션은?'
+    ],
+    example: `[후킹] 요즘 유행하는 '재료 3개 요리' 챌린지, 저는 더 극단적으로 해봤어요.
+[본론-트위스트] 1000원으로 한 끼 만들기.
+[본론-실행] 계란 하나, 밥 한 공기, 간장. 이걸로 맛있게 될까?
+[본론-펀치] 결과는… 생각보다 미쳤습니다.
+[CTA] 다음 챌린지 주제 댓글로 정해주세요.`
+  }
 ];
+
+function getVideoTemplate(name){
+  const aliases = { '시연·리뷰형': '시연형' };
+  const key = aliases[name] || name;
+  return videoTemplates.find(t => t.name === key) || null;
+}
+
+function getLengthGuide(sec){
+  const s = parseInt(sec, 10) || 40;
+  if(s < 20) return { hint: '핵심만 · 4~5문장', guide: '20초 미만: 핵심만. 각 단계 1줄. 봐야할이유·해소공감 생략 가능. 4~5문장.' };
+  if(s < 30) return { hint: '간결 · 6~8문장', guide: '20~30초: 각 단계 1~2줄. 6~8문장.' };
+  if(s < 40) return { hint: '디테일 약간 · 8~11문장', guide: '30~40초: 디테일 약간 추가. 8~11문장.' };
+  if(s < 50) return { hint: '기본 분량 · 11~14문장', guide: '40~50초(기본): 각 단계 1~2줄 + 감정·호불호 1~2회. 11~14문장.' };
+  if(s < 60) return { hint: '풍부 · 14~18문장', guide: '50초~1분: 각 단계 2~3줄. 14~18문장.' };
+  if(s < 90) return { hint: '소단락 확장 · 18~28문장', guide: '1분~1분 30초: 본론을 소단락으로 확장, 일화 추가. 18~28문장.' };
+  return { hint: '풍부한 서사 · 28문장+', guide: '1분 30초~3분: 본론 여러 소단락, 디테일·일화 풍부. 28문장 이상.' };
+}
+
+const LENGTH_MIN = 5;
+const LENGTH_MAX = 180;
+const LENGTH_SPLIT = 60; // 슬라이더 2/3 지점 = 60초
+const LENGTH_TICKS = [20, 40, 60, 90, 180];
+const LENGTH_DEFAULT = 40;
+
+function lengthToPos(sec){
+  const v = Math.max(LENGTH_MIN, Math.min(LENGTH_MAX, sec));
+  if(v <= LENGTH_SPLIT){
+    return ((v - LENGTH_MIN) / (LENGTH_SPLIT - LENGTH_MIN)) * (2 / 3);
+  }
+  return (2 / 3) + ((v - LENGTH_SPLIT) / (LENGTH_MAX - LENGTH_SPLIT)) * (1 / 3);
+}
+
+function posToLength(pos){
+  const p = Math.max(0, Math.min(1, pos));
+  if(p <= 2 / 3){
+    return Math.round(LENGTH_MIN + (p / (2 / 3)) * (LENGTH_SPLIT - LENGTH_MIN));
+  }
+  return Math.round(LENGTH_SPLIT + ((p - 2 / 3) / (1 / 3)) * (LENGTH_MAX - LENGTH_SPLIT));
+}
+
+function getVideoLength(){
+  const slider = document.getElementById('video-length');
+  if(!slider) return LENGTH_DEFAULT;
+  return posToLength(slider.value / 1000);
+}
+
+function setVideoLength(sec){
+  const clamped = Math.max(LENGTH_MIN, Math.min(LENGTH_MAX, Math.round(sec)));
+  const slider = document.getElementById('video-length');
+  if(slider) slider.value = Math.round(lengthToPos(clamped) * 1000);
+  updateLengthDisplay();
+  return clamped;
+}
+
+function isLengthEditing(){
+  const inp = document.getElementById('length-input');
+  return inp && inp.style.display !== 'none';
+}
+
+function startLengthEdit(preset){
+  const disp = document.getElementById('length-display');
+  const inp = document.getElementById('length-input');
+  if(!disp || !inp) return;
+  inp.value = preset != null ? preset : getVideoLength();
+  disp.style.display = 'none';
+  inp.style.display = 'inline-block';
+  inp.focus();
+  inp.select();
+}
+
+function commitLengthEdit(){
+  const disp = document.getElementById('length-display');
+  const inp = document.getElementById('length-input');
+  if(!inp || inp.style.display === 'none') return;
+  const raw = parseInt(inp.value, 10);
+  if(!isNaN(raw)) setVideoLength(raw);
+  else updateLengthDisplay();
+  inp.style.display = 'none';
+  disp.style.display = '';
+}
+
+function lengthInputKeydown(e){
+  if(e.key === 'Enter'){ e.preventDefault(); commitLengthEdit(); }
+  if(e.key === 'Escape'){
+    const disp = document.getElementById('length-display');
+    const inp = document.getElementById('length-input');
+    if(inp) inp.style.display = 'none';
+    if(disp) disp.style.display = '';
+    updateLengthDisplay();
+  }
+}
+
+function initLengthTicks(){
+  const wrap = document.getElementById('length-ticks');
+  if(!wrap) return;
+  wrap.innerHTML = LENGTH_TICKS.map(v => {
+    const label = v === LENGTH_DEFAULT ? `${v}초 권장` : `${v}초`;
+    const cls = v === LENGTH_DEFAULT ? ' length-tick-recommended' : '';
+    return `<span class="length-tick${cls}" style="--pos:${lengthToPos(v)}" onclick="startLengthEdit(${v})" title="클릭하여 ${v}초 입력">${label}</span>`;
+  }).join('');
+}
+
+function updateLengthDisplay(){
+  const slider = document.getElementById('video-length');
+  if(!slider) return;
+  const sec = getVideoLength();
+  const lg = getLengthGuide(sec);
+  const disp = document.getElementById('length-display');
+  const hint = document.getElementById('length-hint');
+  if(disp && !isLengthEditing()) disp.innerHTML = sec + '<span class="length-unit">초</span>';
+  if(hint) hint.textContent = lg.hint;
+}
+
+function buildTemplateQuestionsBlock(tpl){
+  if(!tpl) return '(템플릿 미선택 — 주제에 맞는 템플릿 1개를 먼저 확인하고 질문 세트를 적용)';
+  let block = `[${tpl.name}] 엔진 = ${tpl.engine}`;
+  if(tpl.composition) block += `\n영상 구성 = ${tpl.composition}`;
+  block += '\n' + tpl.questions.map(q => `  ${q}`).join('\n');
+  return block;
+}
+
+function buildCtaModule(goals){
+  const g = goals.length ? goals : ['(미선택)'];
+  const lines = [];
+  const soft = ['좋아요','팔로우','브랜딩'].filter(x => g.includes(x));
+  const hard = ['링크 클릭','상품 판매'].filter(x => g.includes(x));
+  const engage = ['댓글','DM'].filter(x => g.includes(x));
+  if(soft.length) lines.push('- 좋아요·팔로우·브랜딩: 하드 CTA 없이 미래가치·공감·각인 한 줄.');
+  if(hard.length) lines.push('- 링크 클릭·상품 판매: 본론에 가치/문제 녹이고 끝에 단일 하드 CTA + 증거·긴급성.');
+  if(engage.length) lines.push('- 댓글·DM: 오픈루프/질문/도발 하나 + 명시적 단일 지시(DM은 미끼 추가).');
+  if(g.length > 1) lines.push('- 목표 여러 개면 가장 강한 행동 1개를 메인으로, 나머진 약하게.');
+  return lines.length ? lines.join('\n') : '- 목표에 맞는 CTA를 1개만 명확히.';
+}
 
 const SCRIPT_KEY = '3sec-script-checklist-v1';
 function saveScriptState(){ try { localStorage.setItem(SCRIPT_KEY, JSON.stringify(scriptData)); } catch(e) {} }
@@ -1459,7 +1912,8 @@ function loadScriptState(){
 }
 
 function renderScript(){
-  ensureStructurePills();
+  initLengthTicks();
+  updateLengthDisplay();
   const list = document.getElementById('script-cat-list');
   list.innerHTML = '';
   scriptData.forEach(cat => list.appendChild(renderScriptCat(cat)));
@@ -1496,134 +1950,138 @@ function updateScriptPreview(){
     : '<span class="empty-tags">좌측에서 체크하면 \'반드시 충족할 조건\'으로 반영돼요</span>';
 }
 
-function ensureStructurePills(){
-  const g = document.getElementById('structure-group');
-  if(g.children.length) return;
-  scriptStructures.forEach(s=>{
-    const el = document.createElement('span'); el.className = 'pill'; el.textContent = s.name;
-    el.addEventListener('click', ()=>{ togglePill(el); updateStructureGuide(); });
-    g.appendChild(el);
-  });
-}
-function updateStructureGuide(){
-  const sel = document.querySelector('#structure-group .pill.selected');
-  const guide = document.getElementById('structure-guide');
-  if(!sel){ guide.classList.remove('show'); guide.innerHTML = ''; return; }
-  const st = scriptStructures.find(s=>s.name === sel.textContent.trim());
-  guide.innerHTML = `<b>${esc(st.name)} 골격</b><br>${esc(st.guide)}`;
-  guide.classList.add('show');
-}
-
 function scriptCriteriaCatalog(){
   return scriptData.map(c=>`${c.label}\n`+c.items.map(i=>`  · ${i.t}: ${i.p}`).join('\n')).join('\n\n');
 }
-function scriptStructureCatalog(){
-  return scriptStructures.map((s,i)=>`  ${i+1}. ${s.name}: ${s.guide}`).join('\n');
-}
 
 function generateScript(){
+  const template = getSelectedPills('script-tpl-group')[0] || null;
+  const tpl = template ? getVideoTemplate(template) : null;
   const goals = getSelectedPills('script-goal-group');
   const message = document.getElementById('message-input').value.trim();
-  const single = document.getElementById('single-msg-check').checked;
   const hookResult = document.getElementById('script-hook-input').value.trim();
-  const structPill = document.querySelector('#structure-group .pill.selected');
-  const struct = structPill ? scriptStructures.find(s=>s.name === structPill.textContent.trim()) : null;
+  const reference = document.getElementById('script-reference-input').value.trim();
+  const videoLength = getVideoLength();
+  const lengthGuide = getLengthGuide(videoLength);
 
-  if(!message && !hookResult){
-    alert('영상 주제·핵심 메시지나 3초 후킹 결과를 입력해주세요.');
-    document.getElementById('message-input').focus();
+  if(!template){
+    alert('영상 템플릿을 선택해주세요.');
+    return;
+  }
+  if(!hookResult && !message){
+    alert('3초 후킹 결과나 영상 주제·핵심 메시지를 입력해주세요.');
+    document.getElementById('script-hook-input').focus();
     return;
   }
 
-  const reference = document.getElementById('script-reference-input').value.trim();
-
   const goalStr = goals.length ? goals.join(', ') : '(미선택 — 주제에 맞게 판단)';
-  const msgStr = message
-    ? `${message}${single ? '\n  (★메시지는 반드시 하나로 단순하게 유지. 곁가지·중복 주제 금지)' : ''}`
-    : '(미입력 — 아래 3초 후킹/정보에서 핵심 메시지 1개를 직접 정해서 진행)';
-  const hookStr = hookResult || '(입력 안 함)';
+  const hookStr = hookResult || '(입력 안 함 — STEP 1에서 한 줄 받기)';
+  const msgStr = message || '(미입력)';
   const refStr = reference || '(입력 안 함)';
-  const fullStructList = scriptStructureCatalog();
+  const trustStr = buildTrustStr('script-trust-group', 'script-trust-detail', '(없음 — 사용자 답변에 있는 사실만 활용)');
 
-  let structBlock;
-  if(mode === 'ai'){
-    structBlock = struct
-      ? `선호 구조 = ${struct.name} (${struct.guide})\n  → 이 구조를 우선 고려하되, 주제에 더 잘 맞는 게 있으면 아래 목록에서 다른 구조를 추천해도 됩니다.\n  [선택 가능한 구조]\n${fullStructList}`
-      : `(미선택) — 아래 목록에서 이 주제에 가장 잘 맞는 구조를 직접 추천하세요.\n${fullStructList}`;
-  } else {
-    structBlock = struct
-      ? `${struct.name}\n  골격: ${struct.guide}`
-      : `(미선택) — 아래 8가지 중 이 주제에 가장 잘 맞는 구조를 먼저 1개 고르고, 왜 골랐는지 1줄로 설명한 뒤 그 골격대로 작성하세요.\n${fullStructList}`;
-  }
+  const inputBlock =
+`# 입력
+- 영상 템플릿(1개): ${template}
+- 영상 목표(멀티): ${goalStr}
+- 후킹(첫 문장·초반 3초): ${hookStr}${hookResult ? ' — 이미 정해져 있다. 그대로 1단계로 쓰고 다시 쓰지 않는다.' : ''}
+- 영상 길이: ${videoLength}초
+- 영상 주제 / 핵심 메시지 / 참고 정보: ${msgStr}
+- 신뢰·증거 요소: ${trustStr}
+- 레퍼런스 영상 / 차별화 포인트: ${refStr}`;
 
-  const planBlock =
-`[기획]
-- 영상 목표: ${goalStr}
-- 영상 주제 / 핵심 메시지 / 정보: ${msgStr}
-- 3초 후킹 / 첫 문장: ${hookStr}
-- 레퍼런스 영상 / 차별화 포인트: ${refStr}
-- 영상 구조: ${structBlock}`;
+  const skeletonBlock = tpl?.composition
+    ? `# 영상 구성 (${template})\n${tpl.composition}\n→ 위 순서대로 대본을 조립할 것. 단계 라벨을 붙여 구조가 보이게.`
+    : `# 공통 뼈대\n후킹(고정) → 봐야 할 이유 → 본론(템플릿별 엔진) → 해소·공감 → CTA(목표별)`;
 
-  const recoStep = (mode === 'ai')
-    ? '\n0) 추천 구조: 위 \'영상 구조\' 목록에서 이 영상에 가장 적합한 구조 1개를 골라 추천하고, 왜 그 구조인지 1줄로 설명'
+  const stepBlock =
+`# 작동 순서 (질문 먼저 하고 기다린다)
+STEP 1. 템플릿·목표·후킹·영상 길이(${videoLength}초)를 확인한다. 후킹 없으면 한 줄 받는다.
+STEP 2. 템플릿에 맞는 본문 질문을 1~2개씩 던진다(아래 세트). 답이 모호하면 다시 묻는다.
+STEP 3. "이 주제에 대한 너의 솔직한 감정·호불호·리액션 1~2개"를 묻는다. (매력 재료)
+STEP 4. 목표에 맞는 CTA 정보를 묻는다(아래 모듈).
+STEP 5. 모든 답을 받은 뒤에만 대본을 조립한다. 받기 전엔 대본을 쓰지 않는다.
+★ 지금 바로 STEP 1부터 시작하고, 한 번에 모든 질문을 던지지 말고 답을 기다린다. ★`;
+
+  const personalityBlock =
+`# 개성·매력 살리기 (중요)
+구조대로만 흐르면 정형화돼서 재미가 없다. 사용자 고유의 매력을 반드시 살려라.
+- STEP 3에서 받은 감정·호불호·리액션을 본문 중간중간 '적절한 지점'에만 자연스럽게 녹인다.
+  (예: "솔직히 이건 좀 별로였어요", "이건 진짜 인생템", "여기서 저도 놀랐는데")
+- 매 단계에 욱여넣지 말 것. 톤에 사람 냄새를 입히는 용도다.
+- 사실(수치·사건)은 사용자 답변에서만. 감정·말투·리액션은 살려도 되지만, 사용자가 말 안 한 사실은 지어내지 않는다.
+- 신뢰·증거 요소가 입력된 경우, 그것을 활용한 신뢰 문장을 본론·봐야 할 이유에 자연스럽게 녹인다. 없는 증거는 지어내지 말 것.
+- 문장 길이와 리듬을 일부러 변주해 기계적으로 들리지 않게 한다.`;
+
+  const lengthBlock =
+`# 영상 길이 / 분량 조절
+${videoLength}초에 맞춰 분량을 조절한다. 각 지점은 한 문장만이 아니라 길이에 따라 여러 줄로 확장한다.
+길어질수록 '본론'을 우선 확장(일화·예시·디테일·감정 추가)하고, 후킹·CTA는 짧게 유지한다.
+목표 기준(엄격한 상한 아님):
+- 20초 미만: 핵심만. 각 단계 1줄. 봐야할이유·해소공감 생략 가능. 4~5문장.
+- 20~30초: 각 단계 1~2줄. 6~8문장.
+- 30~40초: 디테일 약간 추가. 8~11문장.
+- 40~50초(기본): 각 단계 1~2줄 + 감정·호불호 1~2회. 11~14문장.
+- 50초~1분: 각 단계 2~3줄. 14~18문장.
+- 1분~1분 30초: 본론을 소단락으로 확장, 일화 추가. 18~28문장.
+- 1분 30초~3분: 본론 여러 소단락, 디테일·일화 풍부. 28문장 이상.
+→ 이번 영상(${videoLength}초): ${lengthGuide.guide}`;
+
+  const questionsBlock =
+`# 템플릿별 본문 질문 세트
+${buildTemplateQuestionsBlock(tpl)}`;
+
+  const ctaBlock =
+`# 목표별 CTA 모듈
+${buildCtaModule(goals)}`;
+
+  const outputBlock =
+`# 출력 규칙
+- 구어체, 짧은 문장 위주(컷 전환에 맞게). ${videoLength}초에 맞춰 각 단계를 한 줄~여러 줄로 확장.
+- 개성·감정 표현을 자연스럽게 섞되, 사용자 답에 없는 사실은 지어내지 말 것.
+- 단계 라벨([후킹]/[봐야 할 이유]/[본론]/[해소·공감]/[CTA])을 붙여 구조가 보이게.
+- STEP 5에서 대본 조립 시, 아래 참고 예시의 '구조'만 학습하고 내용은 베끼지 말 것.`;
+
+  const exampleBlock = tpl
+    ? `# 템플릿별 참고 예시 (약 40초 기준 / 구조만 학습, 내용 베끼지 말 것)\n[${tpl.name}]\n${tpl.example}`
     : '';
-  const outputSpec =
-`[출력 요구사항]${recoStep}
-1) 타임라인 대본: 0초부터 초 단위 구간으로 나누고, 각 구간마다 [화면·연출] / [멘트(구어체)] / [자막] / [효과음·편집] 4줄로 작성
-2) 길이: 30~45초 기준 (주제에 맞게 조정 가능)
-3) 선택(추천)한 구조 골격의 각 단계가 대본 어디에 해당하는지 표시
-4) 마지막에 적용한 제작 체크리스트를 실제로 충족했는지 ✅/⚠️ 셀프 점검표로 정리`;
 
-  const principles =
-`[반드시 따를 원칙]
-1. 메시지는 하나로. 한 영상에 여러 주제를 욕심내지 말 것
-2. 첫 3초에 후킹하고, 끝까지 볼 이유(오픈루프·페이오프)를 반드시 남길 것
-3. 멘트는 실제 사람이 말하는 구어체로, 군더더기 없이 작성할 것
-4. 추상적인 표현 대신 구체적인 숫자·사례·결과를 쓸 것
-5. 자막은 핵심·후킹 문장 위주로 화면에 박고, 컷 전환과 타이밍을 맞출 것
-6. 영상 목표(${goalStr})로 자연스럽게 이어지는 CTA를 마지막에 배치할 것`;
-
-  const formatBlock =
-`[출력 형식]
-- 모든 결과는 글(텍스트)로만 작성하세요. 이미지·그림은 그리지 말고, 화면을 글로 설명하세요.`;
-
-  let promptText;
-  if(mode === 'ai'){
-    promptText =
-`당신은 숏폼 대본 작가 겸 콘텐츠 디렉터입니다.
-아래 기획 정보를 바탕으로, 완주율 높은 '숏폼 대본'을 자동으로 완성하세요. 아래 [자동 적용할 제작 기준]을 빠짐없이 스스로 적용하세요.
-
-${planBlock}
-
-[자동 적용할 제작 기준] (전부 반영할 것)
-${scriptCriteriaCatalog()}
-
-${outputSpec}
-
-${principles}
-
-${formatBlock}`;
-  } else {
+  let checklistBlock = '';
+  if(mode === 'manual'){
     const checkedItems = [];
     scriptData.forEach(c=>c.items.forEach(i=>{ if(i.checked) checkedItems.push(i.p); }));
-    const checkedStr = checkedItems.length
-      ? checkedItems.map((t,i)=>`  ${i+1}. ${t}`).join('\n')
-      : '(직접 선택 안 함 — 아래 기본 베스트프랙티스를 모두 적용)\n'+scriptCriteriaCatalog();
-    promptText =
-`당신은 숏폼 대본 작가 겸 콘텐츠 디렉터입니다.
-아래 기획 정보와 구조에 맞춰, 바로 촬영·녹음할 수 있는 '숏폼 대본'을 작성하세요.
-
-${planBlock}
-
-[반드시 충족할 제작 체크리스트]
-${checkedStr}
-
-${outputSpec}
-
-${principles}
-
-${formatBlock}`;
+    checklistBlock = checkedItems.length
+      ? `\n# 제작 체크리스트 (대본에 반영)\n${checkedItems.map((t,i)=>`${i+1}. ${t}`).join('\n')}`
+      : `\n# 제작 체크리스트 (기본 적용)\n${scriptCriteriaCatalog()}`;
+  } else {
+    checklistBlock = `\n# 제작 체크리스트 (자동 적용)\n${scriptCriteriaCatalog()}`;
   }
+
+  const promptText =
+`# 역할
+너는 숏폼 대본 작성을 돕는 전문 디렉터다.
+핵심 원칙: 사용자 대신 사실을 지어내지 않는다. 단계별로 질문을 던져 답을 받고,
+그 답을 재료로 대본을 조립한다. 목표는 "AI가 써준 대본"이 아니라
+"사용자가 직접 참여해 만든, 신뢰도 있고 본인 매력이 살아있는 대본"이다.
+
+${inputBlock}
+
+${skeletonBlock}
+
+${stepBlock}
+
+${personalityBlock}
+
+${lengthBlock}
+
+${questionsBlock}
+
+${ctaBlock}
+
+${outputBlock}
+
+${exampleBlock}
+${checklistBlock}`;
 
   document.getElementById('script-result-dot').style.background = 'var(--green)';
   const gt = document.getElementById('script-gen-text');
@@ -1645,6 +2103,9 @@ function carryToScript(){
     goals: getSelectedPills('goal-group'),
     topic: document.getElementById('topic-input').value.trim(),
     reference: document.getElementById('reference-input').value.trim(),
+    template: getSelectedPills('tpl-group')[0] || null,
+    trust: getSelectedPills('trust-group'),
+    trustDetail: document.getElementById('trust-detail').value.trim(),
   };
   selectApp('script');
 }
@@ -1653,6 +2114,20 @@ function applyCarryOver(){
   document.querySelectorAll('#script-goal-group .pill').forEach(p=>{
     p.classList.toggle('selected', carryOver.goals.includes(p.textContent.trim()));
   });
+  if(carryOver.template){
+    const tplName = carryOver.template === '시연·리뷰형' ? '시연형' : carryOver.template;
+    document.querySelectorAll('#script-tpl-group .pill').forEach(p=>{
+      p.classList.toggle('selected', p.textContent.trim() === tplName);
+    });
+  }
+  if(carryOver.trust){
+    document.querySelectorAll('#script-trust-group .pill').forEach(p=>{
+      p.classList.toggle('selected', carryOver.trust.includes(p.textContent.trim()));
+    });
+  }
+  if(carryOver.trustDetail){
+    document.getElementById('script-trust-detail').value = carryOver.trustDetail;
+  }
   if(carryOver.topic){
     const hookField = document.getElementById('script-hook-input');
     if(!hookField.value) hookField.value = carryOver.topic;
@@ -1662,7 +2137,7 @@ function applyCarryOver(){
   }
   const note = document.getElementById('carry-note');
   note.style.display = 'block';
-  note.textContent = '⚡ 3초 후킹에서 정보를 가져왔어요. 목표·첫 문장·레퍼런스가 자동 입력됐습니다. AI가 만든 후킹 결과가 있으면 \'3초 후킹 결과 입력\'란에 붙여넣고, 주제·메시지를 채운 뒤 생성하세요.';
+  note.textContent = '⚡ 3초 후킹에서 정보를 가져왔어요. 목표·템플릿·신뢰·증거·첫 문장·레퍼런스가 자동 입력됐습니다. AI가 만든 후킹 결과가 있으면 \'3초 후킹 결과 입력\'란에 붙여넣고, 주제·메시지를 채운 뒤 생성하세요.';
   carryOver = null;
 }
 
@@ -1722,9 +2197,9 @@ function showModeSelect(){
     document.getElementById('ms-title').textContent = '숏폼 대본, 어떻게 만들까요?';
     document.getElementById('ms-sub').textContent = '대본 작성 방식을 선택하세요.';
     document.getElementById('mc-manual-title').textContent = '직접 선택';
-    document.getElementById('mc-manual-desc').textContent = '구조를 고르고 제작 체크리스트를 직접 선택해 대본 프롬프트를 만듭니다.';
-    document.getElementById('mc-ai-title').textContent = 'AI 자동 대본 생성';
-    document.getElementById('mc-ai-desc').textContent = '정보만 입력하면 AI가 모든 제작 기준을 적용해 대본을 자동으로 완성합니다.';
+    document.getElementById('mc-manual-desc').textContent = '템플릿·목표·길이를 정하고 제작 체크리스트를 직접 선택해 대본 프롬프트를 만듭니다.';
+    document.getElementById('mc-ai-title').textContent = 'AI 대본 생성';
+    document.getElementById('mc-ai-desc').textContent = '정보만 입력하면 AI가 단계별 질문을 던져 답을 받고, 사용자 참여형 대본을 조립합니다.';
   } else {
     document.getElementById('ms-title').textContent = '3초 후킹, 어떻게 시작할까요?';
     document.getElementById('ms-sub').textContent = '후킹 전략을 만드는 방식을 선택하세요.';
